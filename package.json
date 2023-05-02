@@ -2,7 +2,7 @@
   "name": "frontend-project-11",
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/peperopuripuri/frontend-project-11/workflows/hexlet-check/badge.svg)](https://github.com/peperopuripuri/frontend-project-11/actions)",
-  "main": "index.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "webpack serve",
     "build": "webpack build --mode=production",
