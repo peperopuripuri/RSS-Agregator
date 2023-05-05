@@ -19,12 +19,13 @@ button.addEventListener('click', e => {
             alreadyHere.push(watchedObj.rss);
             alreadyHere.map((el, index) =>{
                 if (index !== alreadyHere.indexOf(el)) {
-                    if (alreadyHere.length >= 2) alreadyHere.splice(0, 1);
                     dangerText.innerHTML = `RSS уже существует`;
                     dangerText.removeAttribute('style');
                     input.classList.add('is-invalid');
+                    alreadyHere.pop(el);
                 } else {
-                    input.value = '';
+                    if (alreadyHere.length > 2) alreadyHere.splice(0, 1)
+                    // input.value = null;
                     input.classList.remove('is-invalid');
                     dangerText.setAttribute('style', 'color: green !important');
                     dangerText.innerHTML = `RSS успешно загружен`;
