@@ -36,6 +36,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.7",
     "bootstrap": "^5.2.3",
+    "i18next": "^22.4.15",
     "on-change": "^4.0.2",
     "svelte-preprocess": "^5.0.3",
     "yup": "^1.1.1"

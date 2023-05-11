@@ -14,7 +14,6 @@ const validate = (url, urls = new Array()) => {
         .validate(watchedState.urlForm)
         .then(value => {
             watchedState.status = 'correct';
-            console.log(value);
         })
         .catch(error => {
             if (error.message === 'url must be a valid URL') watchedState.status = 'error';
