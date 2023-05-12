@@ -1,6 +1,8 @@
 export default {
-    status: null,
     urlForm: {
+        status: null,
         url: null,
+        translation: null,
     },
+
 };
