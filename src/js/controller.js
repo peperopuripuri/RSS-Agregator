@@ -40,22 +40,24 @@ const translate = (key) => {
 };
 
 const getData = (url) => {
-    fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
-        .then(response => {
-            if (response.ok) return response.json();
-            throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-            return new DOMParser().parseFromString(data, 'text/xml');
+    axios.get(url)
+        .then(url => {
+            fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
+                .then(response => {
+                    if (response.ok) return response.json();
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => data.contents);
         })
 };
-
+const parse = (data) => new DOMParser().parseFromString(data, 'text/xml');
 
 const validate = (url, urls = new Array()) => {
     const watchedState = watch;
     watchedState.urlForm.url = url;
-    const data = axios.get(url).then(getData(url));
-    console.log(data);
+    const data = getData(url);
+    const parsedData = parse(data);
+    console.log(parsedData);
     yup
         .object({
             url: yup.string().url().notOneOf(urls),
