@@ -1,4 +1,5 @@
-import '../scss/styles.scss';
+import 'bootstrap';
+import '../scss/style.scss';
 import app from './controller';
 
 app();

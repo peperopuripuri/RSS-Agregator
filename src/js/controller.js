@@ -3,8 +3,10 @@ import * as yup from "yup";
 import watch from "./view";
 import i18next from 'i18next';
 import axios from 'axios';
+import { get, post } from 'jquery';
 
 const form = document.querySelector('.rss-form');
+const watchedState = watch;
 
 const translate = (key) => {
     i18next.init({
@@ -39,25 +41,30 @@ const translate = (key) => {
     return i18next.t(key);
 };
 
-const getData = (url) => {
-    axios.get(url)
-        .then(url => {
-            fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
-                .then(response => {
-                    if (response.ok) return response.json();
-                    throw new Error('Network response was not ok.');
-                })
-                .then(data => data.contents);
-        })
-};
 const parse = (data) => new DOMParser().parseFromString(data, 'text/xml');
 
+const getData = (url) => {
+    return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+    .then(response => {
+        const data = response.data.contents;
+        const parsed = parse(data);
+        const title = parsed.querySelector('title').textContent;
+        const description = parsed.querySelector('description').textContent;
+        const postName = parsed.querySelector('item title').textContent;
+        const postDescription = parsed.querySelector('item description').textContent;
+        const postLink = parsed.querySelector('item link').textContent;
+        const postId = parsed.querySelector('item guid').textContent;
+        watchedState.receivedData.post.name = postName;
+        watchedState.receivedData.post.description = postDescription;
+        watchedState.receivedData.post.link = postLink;
+        watchedState.receivedData.post.id = postId;
+        watchedState.receivedData.title = title;
+        watchedState.receivedData.description = description;
+    });
+};
+
 const validate = (url, urls = new Array()) => {
-    const watchedState = watch;
     watchedState.urlForm.url = url;
-    const data = getData(url);
-    const parsedData = parse(data);
-    console.log(parsedData);
     yup
         .object({
             url: yup.string().url().notOneOf(urls),
@@ -82,5 +89,6 @@ export default () => {
     form.addEventListener('submit', e => {
         e.preventDefault();
         validate(input.value, urls);
+        getData(input.value);
     });
 };
