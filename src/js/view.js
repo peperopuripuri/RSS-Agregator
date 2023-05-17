@@ -31,12 +31,6 @@ const render = () => {
         `;
         for (let i = 0; i < state.receivedData.post.name.length; i++) {
             const postId = state.receivedData.post.id[i].textContent;
-            modal.setAttribute('id', `modal-${postId}`);
-            modal.setAttribute('aria-labelledby', `modal-${postId}`);
-            modalTitle.setAttribute('id', `modal-${postId}`);
-            modalTitle.textContent = state.receivedData.post.name[i].textContent;
-            modalDescription.textContent = state.receivedData.post.description[i].textContent;
-            modalLink.setAttribute('href', state.receivedData.post.link[i].textContent);
             posts.innerHTML += `
               <ul class="list-group border-0 rounded-0">
                 <li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0">
@@ -44,6 +38,23 @@ const render = () => {
                   <button type="button" class="btn btn-outline-primary btn-sm" data-id="${postId}" data-bs-toggle="modal" data-bs-target="#modal-${postId}">Просмотр</button>
                 </li>
               </ul>
+              <div class="modal fade" id="modal-${postId}" tabindex="-1" aria-labelledby="modal-${postId}-label" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modal-${postId}-label">${state.receivedData.post.name[i].textContent}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      ${state.receivedData.post.description[i].textContent}
+                    </div>
+                    <div class="modal-footer">
+                      <a href="${state.receivedData.post.link[i].textContent}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Перейти</a>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             `;
         };
         feeds.innerHTML = `
