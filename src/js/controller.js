@@ -63,12 +63,14 @@ const validate = (url, urls = new Array()) => {
             return getData(value.url);
         })
         .then(value => {
+            const items = value.querySelectorAll('item');
             const title = value.querySelector('title').textContent;
             const description = value.querySelector('description').textContent;
             const postName = value.querySelectorAll('item title');
             const postDescription = value.querySelectorAll('item description');
             const postLink = value.querySelectorAll('item link');
             const postId = value.querySelectorAll('item guid');
+            watchedState.receivedData.post.list = items;
             watchedState.receivedData.post.name = postName;
             watchedState.receivedData.post.description = postDescription;
             watchedState.receivedData.post.link = postLink;

@@ -5,6 +5,7 @@ export default {
         translation: null,
     },
     receivedData: {
+        list: null,
         post: {
             name: null,
             link: null,
