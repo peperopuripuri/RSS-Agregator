@@ -48,18 +48,7 @@ const getData = (url) => {
     .then(response => {
         const data = response.data.contents;
         const parsed = parse(data);
-        const title = parsed.querySelector('title').textContent;
-        const description = parsed.querySelector('description').textContent;
-        const postName = parsed.querySelector('item title').textContent;
-        const postDescription = parsed.querySelector('item description').textContent;
-        const postLink = parsed.querySelector('item link').textContent;
-        const postId = parsed.querySelector('item guid').textContent;
-        watchedState.receivedData.post.name = postName;
-        watchedState.receivedData.post.description = postDescription;
-        watchedState.receivedData.post.link = postLink;
-        watchedState.receivedData.post.id = postId;
-        watchedState.receivedData.title = title;
-        watchedState.receivedData.description = description;
+        return parsed;
     });
 };
 
@@ -71,6 +60,21 @@ const validate = (url, urls = new Array()) => {
         })
         .validate(watchedState.urlForm)
         .then(value => {
+            return getData(value.url);
+        })
+        .then(value => {
+            const title = value.querySelector('title').textContent;
+            const description = value.querySelector('description').textContent;
+            const postName = value.querySelectorAll('item title');
+            const postDescription = value.querySelectorAll('item description');
+            const postLink = value.querySelectorAll('item link');
+            const postId = value.querySelectorAll('item guid');
+            watchedState.receivedData.post.name = postName;
+            watchedState.receivedData.post.description = postDescription;
+            watchedState.receivedData.post.link = postLink;
+            watchedState.receivedData.post.id = postId;
+            watchedState.receivedData.title = title;
+            watchedState.receivedData.description = description;
             watchedState.urlForm.status = 'correct';
             watchedState.urlForm.translation = translate('correct');
         })
@@ -89,6 +93,5 @@ export default () => {
     form.addEventListener('submit', e => {
         e.preventDefault();
         validate(input.value, urls);
-        getData(input.value);
     });
 };
