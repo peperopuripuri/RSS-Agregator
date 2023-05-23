@@ -1,75 +1,65 @@
-import { input, urls } from './view';
+import render from './view';
+import state from './model';
 import * as yup from "yup";
-import watch from "./view";
+import onChange from 'on-change';
 import i18next from 'i18next';
 import axios from 'axios';
-import { get, post } from 'jquery';
 
-const form = document.querySelector('.rss-form');
-const watchedState = watch;
+export const watchedState = onChange(state, render);
 
-const translate = (key) => {
-    i18next.init({
-        lng: 'ru',
-        resources: {
-            ru: {
-                translation: {
-                    correct: 'RSS успешно загружен',
-                    error: 'Ссылка должна быть валидным URL',
-                    here: 'RSS уже существует',
-                    label: 'Ссылка RSS',
-                    btn: 'Добавить',
-                    lead: 'Начните читать RSS сегодня! Это легко, это красиво.',
-                    agreg: 'RSS агрегатор',
-                    muted: 'Пример: https://ru.hexlet.io/lessons.rss',
-                }
-            },
-            // en: {
-            //     translation: {
-            //         correct: 'RSS successfully loaded',
-            //         error: 'The link must be a valid URL',
-            //         here: 'RSS already here',
-            //         label: 'link RSS',
-            //         btn: 'Add',
-            //         lead: 'Start to read RSS today! Easy and beautiful.',
-            //         agreg: 'RSS aggregator',
-            //         muted: 'Example: https://ru.hexlet.io/lessons.rss',
-            //     },
-            // },
+i18next.init({
+    lng: 'ru',
+    resources: {
+        ru: {
+            translation: {
+                correct: 'RSS успешно загружен',
+                error: 'Ссылка должна быть валидным URL',
+                here: 'RSS уже существует',
+                networkErr: 'Проблемы с сетью, попробуйте позже, пожалуйста',
+                label: 'Ссылка RSS',
+                btn: 'Добавить',
+                lead: 'Начните читать RSS сегодня! Это легко, это красиво.',
+                agreg: 'RSS агрегатор',
+                muted: 'Пример: https://ru.hexlet.io/lessons.rss',
+            }
         },
-    })
-    return i18next.t(key);
-};
+        en: {
+            translation: {
+                correct: 'RSS successfully loaded',
+                error: 'The link must be a valid URL',
+                here: 'RSS already here',
+                networkErr: 'Problems with the network, try again later, please',
+                label: 'link RSS',
+                btn: 'Add',
+                lead: 'Start to read RSS today! Easy and beautiful.',
+                agreg: 'RSS aggregator',
+                muted: 'Example: https://ru.hexlet.io/lessons.rss',
+            },
+        },
+    },
+});
 
-const parse = (data) => new DOMParser().parseFromString(data, 'text/xml');
+const translate = (key) => i18next.t(key);
+
+const parse = (data) => {
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(data, 'text/xml');
+    const items = Array.from(parsed.querySelectorAll('item'));
+    const title = parsed.querySelector('title').textContent;
+    const description = parsed.querySelector('description').textContent;
+    const postName = Array.from(parsed.querySelectorAll('item title'));
+    const postDescription = Array.from(parsed.querySelectorAll('item description'));
+    const postLink = Array.from(parsed.querySelectorAll('item link'));
+    const postId = Array.from(parsed.querySelectorAll('item guid'));
+    return { parsed, items, title, description, postName, postDescription, postLink, postId, };
+};
 
 const getData = (url) => {
     return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
     .then(response => {
         const data = response.data.contents;
-        const parsed = parse(data);
-        return parsed;
-    });
-};
-
-const validate = (url, urls = new Array()) => {
-    watchedState.urlForm.url = url;
-    yup
-        .object({
-            url: yup.string().url().notOneOf(urls),
-        })
-        .validate(watchedState.urlForm)
-        .then(value => {
-            return getData(value.url);
-        })
-        .then(value => {
-            const items = value.querySelectorAll('item');
-            const title = value.querySelector('title').textContent;
-            const description = value.querySelector('description').textContent;
-            const postName = value.querySelectorAll('item title');
-            const postDescription = value.querySelectorAll('item description');
-            const postLink = value.querySelectorAll('item link');
-            const postId = value.querySelectorAll('item guid');
+        try {
+            const { parsed, items, title, description, postName, postDescription, postLink, postId } = parse(data);
             watchedState.receivedData.post.list = items;
             watchedState.receivedData.post.name = postName;
             watchedState.receivedData.post.description = postDescription;
@@ -79,8 +69,31 @@ const validate = (url, urls = new Array()) => {
             watchedState.receivedData.description = description;
             watchedState.urlForm.status = 'correct';
             watchedState.urlForm.translation = translate('correct');
+            return parsed;
+        } catch (error) {
+            console.log('PARSE ERROR:', error);
+        };
+    })
+    .catch(error => {
+        console.log('NET ERROR:', error);
+        if (error.message === 'Network Error') {
+            watchedState.urlForm.status = 'networkErr';
+            watchedState.urlForm.translation = translate('networkErr');
+        };
+    });
+};
+const validate = (urls) => {
+    const url = watchedState.urlForm.url;
+    yup
+        .object({
+            url: yup.string().url().notOneOf(urls),
+        })
+        .validate({ url })
+        .then(value => {
+            return getData(value.url);
         })
         .catch(error => {
+            console.log(error);
             if (error.message === 'url must be a valid URL') {
                 watchedState.urlForm.status = 'error';
                 watchedState.urlForm.translation = translate('error');
@@ -92,8 +105,9 @@ const validate = (url, urls = new Array()) => {
 };
 
 export default () => {
+    const form = document.querySelector('.rss-form');
     form.addEventListener('submit', e => {
         e.preventDefault();
-        validate(input.value, urls);
+        validate(watchedState.receivedData.urls);
     });
 };

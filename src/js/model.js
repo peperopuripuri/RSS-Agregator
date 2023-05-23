@@ -12,6 +12,7 @@ export default {
             id: null,
             description: null,
         },
+        urls: [],
         title: null,
         description: null,
     },
