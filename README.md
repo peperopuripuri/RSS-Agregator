@@ -13,5 +13,6 @@
 
 ### Installation and launch instructions
 1. Donwload zip/use git clone *link*
-2. npm run-script build
-3. npm start
+2. `npm install`
+3. `npm run-script build`
+4. `npm start`
