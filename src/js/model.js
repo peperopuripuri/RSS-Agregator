@@ -6,6 +6,8 @@ export default {
         receivedData: {
             posts: [],
             feeds: [],
+            createdFeeds: false,
+            createdPosts: false,
         },
     },
 };

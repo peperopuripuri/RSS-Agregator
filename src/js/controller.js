@@ -26,17 +26,19 @@ const getData = (url, watchedState) => {
         try {
             const { parsed, posts, feeds, } = parseData(data);
             watchedState.urlForm.status = 'correct';
+            watchedState.urlForm.urls.push(url);
             watchedState.urlForm.receivedData.posts = posts;
             watchedState.urlForm.receivedData.feeds = feeds;
             return { parsed, posts, feeds, };
         } catch (error) {
             console.error('PARSE ERROR:', error);
+            watchedState.urlForm.status = 'parseErr';
             throw error;
         };
     })
     .catch(error => {
         console.error('NET ERROR:', error);
-        if (error.message === 'Network Error') watchedState.urlForm.status = 'networkErr';
+        watchedState.urlForm.status = 'networkErr';
         throw error;
     });
 };
@@ -48,13 +50,9 @@ export default (watchedState = createWatchedState()) => {
         const urls = watchedState.urlForm.urls;
         e.preventDefault();
         yup
-        .object({
-            url: yup.string().url().notOneOf(urls),
-        })
-        .validate({ url })
-        .then(()=> {
-            return getData(url, watchedState);
-        })
+        .string().url().notOneOf(urls)
+        .validate(url)
+        .then(() => getData(url, watchedState))
         .catch(error => {
             if (error.message === 'url must be a valid URL') {
                 console.error('NOT VALID URL:', error);
