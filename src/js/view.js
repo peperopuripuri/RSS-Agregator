@@ -8,6 +8,24 @@ const translate = (key) => i18next.t(key);
 
 export const getInputValue = () => document.querySelector('#url-input').value;
 
+export const changeModalData = (title, link, description) => {
+    const modalTitle = document.querySelector('.modal-title');
+    const modalLink = document.querySelector('.full-article');
+    const modalDescription = document.querySelector('.modal-body');
+
+    modalTitle.textContent = title;
+    modalDescription.textContent = description;
+    modalLink.href = link;
+
+
+    // modal.setAttribute('id', `modal-${id}`);
+    // modal.setAttribute('aria-labelledby', `modal-${id}-label`);
+    // modalTitle.textContent = title;
+    // modalTitle.setAttribute('id', `modal-${id}`);
+    // modalLink.setAttribute('href', link);
+    // modalDescription.textContent = description;
+}
+
 const createPosts = () => {
     const posts = document.querySelector('.posts');
 
@@ -29,6 +47,7 @@ const createPosts = () => {
         const postId = i;
         const postTitle = state.urlForm.receivedData.posts[i].querySelector('title').textContent;
         const postLink = state.urlForm.receivedData.posts[i].querySelector('link').textContent;
+        const postDescription = state.urlForm.receivedData.posts[i].querySelector('description').textContent;
 
         const listItem = document.createElement('li');
         listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
@@ -40,13 +59,17 @@ const createPosts = () => {
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         link.textContent = postTitle;
+        link.setAttribute('data-title', postTitle);
+        link.setAttribute('data-link', postLink);
+        link.setAttribute('data-description', postDescription);
+
 
         const button = document.createElement('button');
         button.type = 'button';
         button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
         button.setAttribute('data-id', postId);
         button.setAttribute('data-bs-toggle', 'modal');
-        button.setAttribute('data-bs-target', `#modal`);
+        button.setAttribute('data-bs-target', `#modal-${postId}`);
         button.textContent = 'Просмотр';
 
         const titleSpan = document.createElement('span');
@@ -56,7 +79,6 @@ const createPosts = () => {
         listItem.appendChild(link);
         listItem.appendChild(button);
         postsList.appendChild(listItem);
-
     };
     if (state.urlForm.receivedData.createdPosts) {
         const postsListOld = posts.querySelector('.list-group');

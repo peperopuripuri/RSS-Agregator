@@ -2,7 +2,7 @@ import state from './model';
 import * as yup from "yup";
 import onChange from 'on-change';
 import axios from 'axios';
-import { getInputValue, render } from './view';
+import { getInputValue, render, changeModalData } from './view';
 
 export const createWatchedState = () => {
     const watchedState = onChange(state, render);
@@ -53,6 +53,17 @@ export default (watchedState = createWatchedState()) => {
         .string().url().notOneOf(urls)
         .validate(url)
         .then(() => getData(url, watchedState))
+        .then(() => {
+            const link = document.querySelector('.fw-bold');
+            const postId = link.getAttribute('data-id');
+            const postTitle = link.getAttribute('data-title');
+            const postLink = link.getAttribute('data-link');
+            const postDescription = link.getAttribute('data-description');
+
+            document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+                return button.addEventListener('click', changeModalData(postTitle, postLink, postDescription, postId));
+            });
+        })
         .catch(error => {
             if (error.message === 'url must be a valid URL') {
                 console.error('NOT VALID URL:', error);
