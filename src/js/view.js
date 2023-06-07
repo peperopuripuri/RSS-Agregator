@@ -144,7 +144,7 @@ export const render = () => {
     const feedback = document.querySelector('.feedback');
 
     if (state.urlForm.urls.length > 1) state.urlForm.urls.splice(0, 1);
-
+    console.log(state.urlForm.status)
     switch (state.urlForm.status) {
         case 'correct':
             input.form.reset();

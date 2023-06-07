@@ -52,20 +52,20 @@ export default (watchedState = createWatchedState()) => {
         yup
         .string().url().notOneOf(urls)
         .validate(url)
-        .then(() => getData(url, watchedState))
         .then(() => {
-            const link = document.querySelector('.fw-bold');
-            const postId = link.getAttribute('data-id');
-            const postTitle = link.getAttribute('data-title');
-            const postLink = link.getAttribute('data-link');
-            const postDescription = link.getAttribute('data-description');
+            // const link = document.querySelector('.fw-bold');
+            // const postId = link.getAttribute('data-id');
+            // const postTitle = link.getAttribute('data-title');
+            // const postLink = link.getAttribute('data-link');
+            // const postDescription = link.getAttribute('data-description');
 
-            document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
-                return button.addEventListener('click', changeModalData(postTitle, postLink, postDescription, postId));
-            });
+            // document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+            //     return button.addEventListener('click', changeModalData(postTitle, postLink, postDescription, postId));
+            // });
+            return getData(url, watchedState)
         })
         .catch(error => {
-            if (error.message === 'url must be a valid URL') {
+            if (error.message === 'this must be a valid URL') {
                 console.error('NOT VALID URL:', error);
                 watchedState.urlForm.status = 'error';
             } else if (error.type === 'notOneOf') {
