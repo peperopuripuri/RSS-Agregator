@@ -3,6 +3,8 @@ import * as yup from "yup";
 import onChange from 'on-change';
 import axios from 'axios';
 import { getInputValue, render, changeModalData } from './view';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 
 export const createWatchedState = () => {
     const watchedState = onChange(state, render);
@@ -52,17 +54,16 @@ export default (watchedState = createWatchedState()) => {
         yup
         .string().url().notOneOf(urls)
         .validate(url)
+        .then(() => getData(url, watchedState))
         .then(() => {
-            // const link = document.querySelector('.fw-bold');
-            // const postId = link.getAttribute('data-id');
-            // const postTitle = link.getAttribute('data-title');
-            // const postLink = link.getAttribute('data-link');
-            // const postDescription = link.getAttribute('data-description');
-
-            // document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
-            //     return button.addEventListener('click', changeModalData(postTitle, postLink, postDescription, postId));
-            // });
-            return getData(url, watchedState)
+            const link = document.querySelector('.fw-bold');
+            const postId = link.getAttribute('data-id');
+            const postTitle = link.getAttribute('data-title');
+            const postLink = link.getAttribute('data-link');
+            const postDescription = link.getAttribute('data-description');
+            document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+                return button.addEventListener('click', changeModalData(postTitle, postLink, postDescription, postId));
+            });
         })
         .catch(error => {
             if (error.message === 'this must be a valid URL') {

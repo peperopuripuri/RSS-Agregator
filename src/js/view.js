@@ -1,6 +1,8 @@
 import i18next from 'i18next';
 import resources from '../resources/resources';
 import state from './model';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 
 i18next.init({ lng: 'ru', resources });
 
@@ -12,7 +14,9 @@ export const changeModalData = (title, link, description) => {
     const modalTitle = document.querySelector('.modal-title');
     const modalLink = document.querySelector('.full-article');
     const modalDescription = document.querySelector('.modal-body');
-
+    const myModal = document.querySelector('.modal');
+    const modal = new bootstrap.Modal(myModal);
+    modal.show();
     modalTitle.textContent = title;
     modalDescription.textContent = description;
     modalLink.href = link;
@@ -144,7 +148,6 @@ export const render = () => {
     const feedback = document.querySelector('.feedback');
 
     if (state.urlForm.urls.length > 1) state.urlForm.urls.splice(0, 1);
-    console.log(state.urlForm.status)
     switch (state.urlForm.status) {
         case 'correct':
             input.form.reset();
