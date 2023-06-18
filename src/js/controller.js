@@ -29,28 +29,35 @@ const parseData = (data) => {
 };
 
 const getData = (url, watchedState) => {
-    return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
-    .then(response => {
-        const data = response.data.contents;
-        try {
-            const { parsed, posts, feeds, } = parseData(data);
-            watchedState.urlForm.status = 'correct';
-            watchedState.urlForm.urls.push(url);
-            watchedState.urlForm.receivedData.posts = posts;
-            watchedState.urlForm.receivedData.feeds = feeds;
-            return { parsed, posts, feeds, };
-        } catch (error) {
-            console.error('PARSE ERROR:', error);
-            watchedState.urlForm.status = 'parseErr';
-            throw error;
-        };
-    })
-    .catch(error => {
-        console.error('NET ERROR');
-        watchedState.urlForm.status = 'networkErr';
-        throw error;
-    });
+    const updateInterval = 5000;
+    const fetchData = () => {
+        axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+            .then(response => {
+                const data = response.data.contents;
+                try {
+                    const { parsed, posts, feeds, } = parseData(data);
+                    watchedState.urlForm.status = 'correct';
+                    watchedState.urlForm.urls.push(url);
+                    watchedState.urlForm.receivedData.posts = posts;
+                    watchedState.urlForm.receivedData.feeds = feeds;
+                    console.log('DATA UPDATED');
+                    return { parsed, posts, feeds, };
+                } catch (error) {
+                    console.error('PARSE ERROR:', error);
+                    watchedState.urlForm.status = 'parseErr';
+                    throw error;
+                };
+            })
+            .catch(error => {
+                console.error('NET ERROR');
+                watchedState.urlForm.status = 'networkErr';
+                throw error;
+            });
+        setTimeout(fetchData, updateInterval);
+    }
+    fetchData();
 };
+
 
 export default () => {
     const watchedState = createWatchedState();
