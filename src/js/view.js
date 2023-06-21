@@ -1,36 +1,21 @@
-import i18next from 'i18next';
-import resources from '../resources/resources';
-import state from './model';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
+import onChange from 'on-change';
+import i18next from 'i18next';
 
-i18next.init({ lng: 'ru', resources });
+const translate = (bible, key) => bible.t(key);
 
-const translate = (key) => i18next.t(key);
-
-export const changeModalData = (title, link, description) => {
+const renderModal = (state, id, title, description, link) => {
     const modalTitle = document.querySelector('.modal-title');
+    const modalBody = document.querySelector('.modal-body');
     const modalLink = document.querySelector('.full-article');
-    const modalDescription = document.querySelector('.modal-body');
-    const myModal = document.querySelector('.modal');
-    const modal = new bootstrap.Modal(myModal);
-    modal.show();
+
     modalTitle.textContent = title;
-    modalDescription.textContent = description;
+    modalBody.textContent = description;
     modalLink.href = link;
+};
 
-    // document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
-    //     return button.addEventListener('click', changeModalData(postTitle, postLink, postDescription, postId));
-    // });
-    // modal.setAttribute('id', `modal-${id}`);
-    // modal.setAttribute('aria-labelledby', `modal-${id}-label`);
-    // modalTitle.textContent = title;
-    // modalTitle.setAttribute('id', `modal-${id}`);
-    // modalLink.setAttribute('href', link);
-    // modalDescription.textContent = description;
-}
-
-const createPosts = () => {
+const createPosts = (state) => {
     const posts = document.querySelector('.posts');
     const cardTitlePost = document.createElement('h2');
     cardTitlePost.classList.add('card-title', 'h4');
@@ -79,6 +64,7 @@ const createPosts = () => {
             button.setAttribute('data-bs-toggle', 'modal');
             button.setAttribute('data-bs-target', `#modal-${i}`);
             button.textContent = 'Просмотр';
+            renderModal(state, i, postTitle, postTitle, link)
 
             const titleSpan = document.createElement('span');
             titleSpan.textContent = postTitle;
@@ -91,10 +77,10 @@ const createPosts = () => {
     }
 };
 
-const createFeeds = () => {
+const createFeeds = (state) => {
     const feeds = document.querySelector('.feeds');
     const feedTitle = state.urlForm.receivedData.feeds[0].textContent;
-    const feedDescription = state.urlForm.receivedData.feeds[0].textContent;
+    const feedDescription = state.urlForm.receivedData.feeds[1].textContent;
 
     if (state.urlForm.receivedData.createdFeeds) {
         const ul = feeds.querySelector('ul');
@@ -143,7 +129,7 @@ const createFeeds = () => {
     };
 };
 
-export const render = () => {
+export const render = (state) => {
     const input = document.querySelector('#url-input');
     const feedback = document.querySelector('.feedback');
 
@@ -155,12 +141,12 @@ export const render = () => {
             feedback.classList.remove('text-danger');
             feedback.classList.add('text-success');
             input.classList.add('is-valid');
-            feedback.textContent = translate('correct');
+            feedback.textContent = translate(i18next, 'correct');
             if (state.urlForm.receivedData.feeds.length) {
-                createFeeds();
+                createFeeds(state);
             };
             if (state.urlForm.receivedData.posts.length) {
-                createPosts();
+                createPosts(state);
             };
             break;
         case 'error':
@@ -168,21 +154,28 @@ export const render = () => {
             input.classList.remove('is-valid');
             input.classList.add('is-invalid');
             feedback.classList.add('text-danger');
-            feedback.textContent = translate('error');
+            feedback.textContent = translate(i18next, 'error');
             break;
         case 'dublicate':
             feedback.classList.remove('text-success');
             input.classList.remove('is-valid');
             input.classList.add('is-invalid');
             feedback.classList.add('text-danger');
-            feedback.textContent = translate('dublicate');
+            feedback.textContent = translate(i18next, 'dublicate');
             break;
         case 'parseErr':
             feedback.classList.remove('text-success');
             input.classList.remove('is-valid');
             input.classList.add('is-invalid');
             feedback.classList.add('text-danger');
-            feedback.textContent = translate('parseErr');
+            feedback.textContent = translate(i18next, 'parseErr');
             break;
     }
+};
+
+export const createWatchedState = (state, render) => {
+    const watchedState = onChange(state, () => {
+      render(state);
+    });
+    return watchedState;
 };

@@ -1,15 +1,10 @@
-import state from './model';
 import * as yup from "yup";
-import onChange from 'on-change';
 import axios from 'axios';
-import { render } from './view';
+import { createWatchedState, render } from './view';
+import i18next from 'i18next';
+import resources from '../resources/resources';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
-
-export const createWatchedState = () => {
-    const watchedState = onChange(state, render);
-    return watchedState;
-};
 
 const parseData = (data) => {
     const parser = new DOMParser();
@@ -17,7 +12,7 @@ const parseData = (data) => {
     const errorNode = parsed.querySelector("parsererror");
 
     if (errorNode) {
-        console.error('PARSE ERROR:', error);
+        console.error('PARSE ERROR');
         watchedState.urlForm.status = 'parseErr';
     } else {
         const posts = Array.from(parsed.querySelectorAll('item'));
@@ -28,43 +23,48 @@ const parseData = (data) => {
     }
 };
 
+const addDomain = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
+
 const getData = (url, watchedState) => {
+    const urlWithDomain = addDomain(url);
     const updateInterval = 5000;
     const fetchData = () => {
-        axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+        axios.get(urlWithDomain)
             .then(response => {
                 const data = response.data.contents;
-                try {
-                    const { parsed, posts, feeds, } = parseData(data);
-                    watchedState.urlForm.status = 'correct';
-                    watchedState.urlForm.urls.push(url);
-                    watchedState.urlForm.receivedData.posts = posts;
-                    watchedState.urlForm.receivedData.feeds = feeds;
-                    console.log('DATA UPDATED');
-                    return { parsed, posts, feeds, };
-                } catch (error) {
-                    console.error('PARSE ERROR:', error);
-                    watchedState.urlForm.status = 'parseErr';
-                    throw error;
-                };
-            })
-            .catch(error => {
-                console.error('NET ERROR');
-                watchedState.urlForm.status = 'networkErr';
-                throw error;
+                const { parsed, posts, feeds, } = parseData(data);
+                watchedState.urlForm.status = 'correct';
+                watchedState.urlForm.urls.push(url);
+                watchedState.urlForm.receivedData.posts = posts;
+                watchedState.urlForm.receivedData.feeds = feeds;
+                return { parsed, posts, feeds, };
             });
         setTimeout(fetchData, updateInterval);
     }
     fetchData();
 };
 
-
 export default () => {
-    const watchedState = createWatchedState();
+    const state = {
+        urlForm: {
+            status: null,
+            urls: [],
+            translation: null,
+            receivedData: {
+                posts: [],
+                feeds: [],
+                createdFeeds: false,
+                createdPosts: false,
+            },
+        },
+    };
+    i18next.init({ lng: 'ru', resources });
+
+    const watchedState = createWatchedState(state, render);
     const form = document.querySelector('.rss-form');
     form.addEventListener('submit', e => {
         e.preventDefault();
-        const url = form.elements['url-input'].value;
+        const url = new FormData(e.target)?.get('url');
         const urls = watchedState.urlForm.urls;
         yup
         .string().url().notOneOf(urls)
