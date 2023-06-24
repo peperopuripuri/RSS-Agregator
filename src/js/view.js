@@ -170,6 +170,13 @@ export const render = (state) => {
             feedback.classList.add('text-danger');
             feedback.textContent = translate(i18next, 'parseErr');
             break;
+        case 'networkErr':
+            feedback.classList.remove('text-success');
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+            feedback.classList.add('text-danger');
+            feedback.textContent = translate(i18next, 'networkErr');
+            break;
     }
 };
 

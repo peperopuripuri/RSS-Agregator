@@ -6,14 +6,12 @@ import resources from '../resources/resources';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
-const parseData = (data, watchedState) => {
+const parseData = (data) => {
     const parser = new DOMParser();
     const parsed = parser.parseFromString(data, 'text/xml');
     const errorNode = parsed.querySelector("parsererror");
 
     if (errorNode) {
-        console.error('PARSE ERROR');
-        watchedState.urlForm.status = 'parseErr';
         throw errorNode;
     } else {
         const posts = Array.from(parsed.querySelectorAll('item'));
@@ -39,7 +37,15 @@ const getData = (url, watchedState) => {
                 watchedState.urlForm.receivedData.posts = posts;
                 watchedState.urlForm.receivedData.feeds = feeds;
                 return { parsed, posts, feeds, };
-            });
+            })
+            .catch(err => {
+                console.error('PARSE ERROR');
+                watchedState.urlForm.status = 'parseErr';
+            })
+            .catch(err => {
+                console.error('NET ERROR');
+                watchedState.urlForm.status = 'networkErr';
+            })
         setTimeout(fetchData, updateInterval);
     }
     fetchData();
@@ -72,9 +78,6 @@ export default () => {
         .validate(url)
         .then(() => getData(url, watchedState))
         .catch(error => {
-            console.error('PARSE ERROR');
-            watchedState.urlForm.status = 'parseErr';
-
             if (error.message === 'this must be a valid URL') {
                 console.error('NOT VALID URL:', error);
                 watchedState.urlForm.status = 'error';
