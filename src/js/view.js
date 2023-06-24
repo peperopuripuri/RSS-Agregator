@@ -141,6 +141,7 @@ export const render = (state) => {
             feedback.classList.remove('text-danger');
             feedback.classList.add('text-success');
             input.classList.add('is-valid');
+            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'correct');
             if (state.urlForm.receivedData.feeds.length) {
                 createFeeds(state);
@@ -154,6 +155,7 @@ export const render = (state) => {
             input.classList.remove('is-valid');
             input.classList.add('is-invalid');
             feedback.classList.add('text-danger');
+            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'error');
             break;
         case 'dublicate':
@@ -161,6 +163,7 @@ export const render = (state) => {
             input.classList.remove('is-valid');
             input.classList.add('is-invalid');
             feedback.classList.add('text-danger');
+            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'dublicate');
             break;
         case 'parseErr':
@@ -168,6 +171,7 @@ export const render = (state) => {
             input.classList.remove('is-valid');
             input.classList.add('is-invalid');
             feedback.classList.add('text-danger');
+            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'parseErr');
             break;
         case 'networkErr':
@@ -175,6 +179,7 @@ export const render = (state) => {
             input.classList.remove('is-valid');
             input.classList.add('is-invalid');
             feedback.classList.add('text-danger');
+            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'networkErr');
             break;
     }

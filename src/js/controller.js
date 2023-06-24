@@ -12,7 +12,7 @@ const parseData = (data) => {
     const errorNode = parsed.querySelector("parsererror");
 
     if (errorNode) {
-        throw errorNode;
+        return null;
     } else {
         const posts = Array.from(parsed.querySelectorAll('item'));
         const title = parsed.querySelector('title');
@@ -30,20 +30,21 @@ const getData = (url, watchedState) => {
     const fetchData = () => {
         axios.get(urlWithDomain)
             .then(response => {
-                const data = response.data.contents;
-                const { parsed, posts, feeds, } = parseData(data, watchedState);
-                watchedState.urlForm.status = 'correct';
-                watchedState.urlForm.urls.push(url);
-                watchedState.urlForm.receivedData.posts = posts;
-                watchedState.urlForm.receivedData.feeds = feeds;
-                return { parsed, posts, feeds, };
+                try {
+                    const data = response.data.contents;
+                    const { parsed, posts, feeds, } = parseData(data, watchedState);
+                    watchedState.urlForm.status = 'correct';
+                    watchedState.urlForm.urls.push(url);
+                    watchedState.urlForm.receivedData.posts = posts;
+                    watchedState.urlForm.receivedData.feeds = feeds;
+                    return { parsed, posts, feeds, };
+                } catch (error) {
+                    console.error('PARSE ERROR:', error);
+                    watchedState.urlForm.status = 'parseErr';
+                };
             })
-            .catch(err => {
-                console.error('PARSE ERROR');
-                watchedState.urlForm.status = 'parseErr';
-            })
-            .catch(err => {
-                console.error('NET ERROR');
+            .catch(error => {
+                console.error('NETWORK ERROR:', error);
                 watchedState.urlForm.status = 'networkErr';
             })
         setTimeout(fetchData, updateInterval);
