@@ -6,12 +6,14 @@ import resources from '../resources/resources';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
-const parseData = (data) => {
+const parseData = (data, watchedState) => {
     const parser = new DOMParser();
     const parsed = parser.parseFromString(data, 'text/xml');
     const errorNode = parsed.querySelector("parsererror");
 
     if (errorNode) {
+        console.error('PARSE ERROR');
+        watchedState.urlForm.status = 'parseErr';
         throw errorNode;
     } else {
         const posts = Array.from(parsed.querySelectorAll('item'));
@@ -31,7 +33,7 @@ const getData = (url, watchedState) => {
         axios.get(urlWithDomain)
             .then(response => {
                 const data = response.data.contents;
-                const { parsed, posts, feeds, } = parseData(data);
+                const { parsed, posts, feeds, } = parseData(data, watchedState);
                 watchedState.urlForm.status = 'correct';
                 watchedState.urlForm.urls.push(url);
                 watchedState.urlForm.receivedData.posts = posts;
@@ -70,15 +72,15 @@ export default () => {
         .validate(url)
         .then(() => getData(url, watchedState))
         .catch(error => {
+            console.error('PARSE ERROR');
+            watchedState.urlForm.status = 'parseErr';
+
             if (error.message === 'this must be a valid URL') {
                 console.error('NOT VALID URL:', error);
                 watchedState.urlForm.status = 'error';
             } else if (error.type === 'notOneOf') {
                 console.error('DUBLICATE:', error);
                 watchedState.urlForm.status = 'dublicate';
-            } else {
-                console.error('PARSE ERROR');
-                watchedState.urlForm.status = 'parseErr';
             }
         });
     });
