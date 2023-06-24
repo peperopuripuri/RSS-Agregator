@@ -12,8 +12,7 @@ const parseData = (data) => {
     const errorNode = parsed.querySelector("parsererror");
 
     if (errorNode) {
-        console.error('PARSE ERROR');
-        watchedState.urlForm.status = 'parseErr';
+        throw errorNode;
     } else {
         const posts = Array.from(parsed.querySelectorAll('item'));
         const title = parsed.querySelector('title');
@@ -77,6 +76,9 @@ export default () => {
             } else if (error.type === 'notOneOf') {
                 console.error('DUBLICATE:', error);
                 watchedState.urlForm.status = 'dublicate';
+            } else {
+                console.error('PARSE ERROR');
+                watchedState.urlForm.status = 'parseErr';
             }
         });
     });
