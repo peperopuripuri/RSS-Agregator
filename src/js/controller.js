@@ -13,7 +13,7 @@ const parseData = (data) => {
         const parseError = parsed.querySelector('parsererror');
 
         if (parseError) {
-            throw new Error('parseError');
+            throw new Error;
         } else {
             const posts = Array.from(parsed.querySelectorAll('item'));
             const title = parsed.querySelector('title');
@@ -23,7 +23,7 @@ const parseData = (data) => {
         }
     } catch (error) {
         console.error('PARSE ERROR:', error);
-        watchedState.urlForm.status = 'parseError';
+        throw error;
     }
 };
 
@@ -44,9 +44,13 @@ const getData = (url, watchedState) => {
                     return { parsed, posts, feeds, };
             })
             .catch(error => {
-                console.error('NETWORK ERROR:', error);
-                watchedState.urlForm.status = 'networkErr';
-            });
+                if (error.message === 'PARSE ERROR:') {
+                    watchedState.urlForm.status = 'parseErr';
+                } else {
+                    console.error('NETWORK ERROR:', error);
+                    watchedState.urlForm.status = 'networkErr';
+                }
+            })
         setTimeout(fetchData, updateInterval);
     }
     fetchData();
