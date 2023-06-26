@@ -4,7 +4,7 @@ export default {
             correct: 'RSS успешно загружен',
             error: 'Ссылка должна быть валидным URL',
             dublicate: 'RSS уже существует',
-            networkErr: 'Проблема с сетью',
+            networkErr: 'Ошибка сети',
             parseErr: 'Ресурс не содержит валидный RSS',
             label: 'Ссылка RSS',
             btn: 'Добавить',

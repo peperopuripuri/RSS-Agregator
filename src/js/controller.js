@@ -7,19 +7,24 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
 const parseData = (data) => {
-    const parser = new DOMParser();
-    const parsed = parser.parseFromString(data, 'text/xml');
-    const errorNode = parsed.querySelector("parsererror");
+    try {
+        const parser = new DOMParser();
+        const parsed = parser.parseFromString(data, 'text/xml');
+        const parseError = parsed.querySelector('parsererror');
 
-    if (errorNode) {
-        return null;
-    } else {
-        const posts = Array.from(parsed.querySelectorAll('item'));
-        const title = parsed.querySelector('title');
-        const description = parsed.querySelector('description');
-        const feeds = [ title, description ];
-        return { parsed, posts, feeds, };
-    }
+        if (parseError) {
+            return null;
+        } else {
+            const posts = Array.from(parsed.querySelectorAll('item'));
+            const title = parsed.querySelector('title');
+            const description = parsed.querySelector('description');
+            const feeds = [ title, description ];
+            return { parsed, posts, feeds, };
+        }
+    } catch (error) {
+        console.error('PARSE ERROR:', error);
+        watchedState.urlForm.status = 'parseError';
+    };
 };
 
 const addDomain = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
@@ -30,7 +35,6 @@ const getData = (url, watchedState) => {
     const fetchData = () => {
         axios.get(urlWithDomain)
             .then(response => {
-                try {
                     const data = response.data.contents;
                     const { parsed, posts, feeds, } = parseData(data, watchedState);
                     watchedState.urlForm.status = 'correct';
@@ -38,15 +42,11 @@ const getData = (url, watchedState) => {
                     watchedState.urlForm.receivedData.posts = posts;
                     watchedState.urlForm.receivedData.feeds = feeds;
                     return { parsed, posts, feeds, };
-                } catch (error) {
-                    console.error('PARSE ERROR:', error);
-                    watchedState.urlForm.status = 'parseErr';
-                };
             })
             .catch(error => {
                 console.error('NETWORK ERROR:', error);
                 watchedState.urlForm.status = 'networkErr';
-            })
+            });
         setTimeout(fetchData, updateInterval);
     }
     fetchData();
@@ -86,6 +86,6 @@ export default () => {
                 console.error('DUBLICATE:', error);
                 watchedState.urlForm.status = 'dublicate';
             }
-        });
+        })
     });
 };
