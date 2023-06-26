@@ -13,7 +13,7 @@ const parseData = (data) => {
         const parseError = parsed.querySelector('parsererror');
 
         if (parseError) {
-            return null;
+            throw new Error('parseError');
         } else {
             const posts = Array.from(parsed.querySelectorAll('item'));
             const title = parsed.querySelector('title');
@@ -24,7 +24,7 @@ const parseData = (data) => {
     } catch (error) {
         console.error('PARSE ERROR:', error);
         watchedState.urlForm.status = 'parseError';
-    };
+    }
 };
 
 const addDomain = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
