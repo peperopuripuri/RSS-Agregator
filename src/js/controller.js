@@ -13,7 +13,7 @@ const parseData = (data) => {
         const parseError = parsed.querySelector('parsererror');
 
         if (parseError) {
-            throw new Error;
+            throw new Error('Parse Error');
         } else {
             const posts = Array.from(parsed.querySelectorAll('item'));
             const title = parsed.querySelector('title');
@@ -22,7 +22,6 @@ const parseData = (data) => {
             return { parsed, posts, feeds, };
         }
     } catch (error) {
-        console.error('PARSE ERROR:', error);
         throw error;
     }
 };
@@ -44,7 +43,8 @@ const getData = (url, watchedState) => {
                     return { parsed, posts, feeds, };
             })
             .catch(error => {
-                if (error.message === 'PARSE ERROR:') {
+                if (error.message === 'Parse Error') {
+                    console.error('PARSE ERROR:', error);
                     watchedState.urlForm.status = 'parseErr';
                 } else {
                     console.error('NETWORK ERROR:', error);
