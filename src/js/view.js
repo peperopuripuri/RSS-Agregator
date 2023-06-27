@@ -5,16 +5,6 @@ import i18next from 'i18next';
 
 const translate = (bible, key) => bible.t(key);
 
-const renderModal = (state, id, title, description, link) => {
-    const modalTitle = document.querySelector('.modal-title');
-    const modalBody = document.querySelector('.modal-body');
-    const modalLink = document.querySelector('.full-article');
-
-    modalTitle.textContent = title;
-    modalBody.textContent = description;
-    modalLink.href = link;
-};
-
 const createPosts = (state) => {
     const posts = document.querySelector('.posts');
     const cardTitlePost = document.createElement('h2');
@@ -64,7 +54,35 @@ const createPosts = (state) => {
             button.setAttribute('data-bs-toggle', 'modal');
             button.setAttribute('data-bs-target', `#modal-${i}`);
             button.textContent = 'Просмотр';
-            renderModal(state, i, postTitle, postTitle, link)
+
+            button.addEventListener('click', () => {
+                const modalTitle = document.querySelector('.modal-title');
+                const modalBody = document.querySelector('.modal-body');
+                const modalLink = document.querySelector('.full-article');
+                const btnClose = document.querySelector('.btn-close');
+                const btnSecondary = document.querySelector('.btn-secondary');
+                const modal = document.querySelector('#modal');
+
+                modalTitle.textContent = postTitle;
+                modalBody.textContent = postArray[i].querySelector('description').textContent;
+                modalLink.href = postArray[i].querySelector('link').textContent;
+
+                btnClose.addEventListener('click', () => {
+                    modal.classList.remove("show");
+                    modal.style.display = "none";
+                });
+
+                btnSecondary.addEventListener('click', () => {
+                    modal.classList.remove("show");
+                    modal.style.display = "none";
+                });
+
+                modal.classList.add("show");
+                modal.style.display = "block";
+
+                li.classList.remove('fw-bold');
+                li.classList.add('fw-normal');
+            });
 
             const titleSpan = document.createElement('span');
             titleSpan.textContent = postTitle;

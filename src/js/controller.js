@@ -7,23 +7,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 
 const parseData = (data) => {
-    try {
-        const parser = new DOMParser();
-        const parsed = parser.parseFromString(data, 'text/xml');
-        const parseError = parsed.querySelector('parsererror');
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(data, 'text/xml');
+    const parseError = parsed.querySelector('parsererror');
 
-        if (parseError) {
-            throw new Error('Parse Error');
-        } else {
-            const posts = Array.from(parsed.querySelectorAll('item'));
-            const title = parsed.querySelector('title');
-            const description = parsed.querySelector('description');
-            const feeds = [ title, description ];
-            return { parsed, posts, feeds, };
-        }
-    } catch (error) {
-        throw error;
-    }
+    if (parseError) {
+        throw new Error('Parse Error');
+    } else {
+        const posts = Array.from(parsed.querySelectorAll('item'));
+        const title = parsed.querySelector('title');
+        const description = parsed.querySelector('description');
+        const feeds = [ title, description ];
+        return { parsed, posts, feeds, };
+    };
 };
 
 const addDomain = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
@@ -44,14 +40,14 @@ const getData = (url, watchedState) => {
             })
             .catch(error => {
                 if (error.message === 'Parse Error') {
-                    console.error('PARSE ERROR:', error);
+                    console.error('PARSE ERROR:', error.message);
                     watchedState.urlForm.status = 'parseErr';
                 } else {
-                    console.error('NETWORK ERROR:', error);
+                    console.error('NETWORK ERROR:', error.message);
                     watchedState.urlForm.status = 'networkErr';
                 }
             })
-        setTimeout(fetchData, updateInterval);
+        setInterval(fetchData, updateInterval);
     }
     fetchData();
 };
@@ -84,10 +80,10 @@ export default () => {
         .then(() => getData(url, watchedState))
         .catch(error => {
             if (error.message === 'this must be a valid URL') {
-                console.error('NOT VALID URL:', error);
+                console.error('NOT VALID URL:', error.message);
                 watchedState.urlForm.status = 'error';
             } else if (error.type === 'notOneOf') {
-                console.error('DUBLICATE:', error);
+                console.error('DUBLICATE:', error.message);
                 watchedState.urlForm.status = 'dublicate';
             }
         })
