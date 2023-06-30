@@ -119,12 +119,12 @@ const createPosts = (state) => {
     const postTitle = postArray[i].querySelector('title').textContent;
     const existingPost = posts.querySelector(`a[data-title='${postTitle}']`);
     if (!existingPost) {
-      createPostItem(posts, postArray[i], postTitle, i);
+      createPostItem(posts, postArray[i], postTitle, i, postArray);
     }
   }
 };
 
-const createPostItem = (posts, post, postTitle, index) => {
+const createPostItem = (posts, post, postTitle, index, postArray) => {
   const ul = posts.querySelector('ul');
   const li = document.createElement('li');
   li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
@@ -212,6 +212,8 @@ const updateFormStatus = (status, feedback, input, i18next, translate, state) =>
     case 'parseErr':
     case 'networkErr':
       feedback.textContent = translate(i18next, status);
+      feedback.classList.add('text-danger');
+      input.classList.add('is-invalid');
       break;
   }
 };
