@@ -30,6 +30,94 @@ const triggerModal = (postArray, i) => {
   modal.style.display = 'block';
 };
 
+const createCardTitle = (text) => {
+  const cardTitle = document.createElement('h2');
+  cardTitle.classList.add('card-title', 'h4');
+  cardTitle.textContent = text;
+  return cardTitle;
+};
+
+const createCard = () => {
+  const card = document.createElement('div');
+  card.classList.add('card', 'border-0');
+  return card;
+};
+
+const createCardBody = () => {
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+  return cardBody;
+};
+
+const createCardElement = () => {
+  const card = document.createElement('div');
+  card.classList.add('card', 'border-0');
+  return card;
+};
+
+const createCardBodyElement = () => {
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+  return cardBody;
+};
+
+const createCardTitleElement = (text) => {
+  const cardTitle = document.createElement('h2');
+  cardTitle.classList.add('card-title', 'h4');
+  cardTitle.textContent = text;
+  return cardTitle;
+};
+
+const createFeedListElement = () => {
+  const ul = document.createElement('ul');
+  ul.classList.add('list-group', 'border-0', 'rounded-0');
+  return ul;
+};
+
+const createFeedListItemElement = (feedTitle, feedDescription) => {
+  const li = document.createElement('li');
+  li.classList.add('list-group-item', 'border-0', 'border-end-0');
+  li.dataset.title = feedTitle;
+
+  const h3 = document.createElement('h3');
+  h3.classList.add('h6', 'm-0');
+  h3.textContent = feedTitle;
+
+  const p = document.createElement('p');
+  p.classList.add('m-0', 'small', 'text-black-50');
+  p.textContent = feedDescription;
+
+  li.appendChild(h3);
+  li.appendChild(p);
+
+  return li;
+};
+
+const createFeedItem = (feeds, feedTitle, feedDescription) => {
+  const ul = feeds.querySelector('ul');
+  const existingFeed = ul.querySelector(`li[data-title="${feedTitle}"]`);
+  if (!existingFeed) {
+    const li = createFeedListItemElement(feedTitle, feedDescription);
+    ul.insertBefore(li, ul.firstChild);
+  }
+};
+
+const createFeedSection = (feeds, feedTitle, feedDescription) => {
+  const cardFeed = createCardElement();
+  const cardBodyFeed = createCardBodyElement();
+  const cardTitleFeed = createCardTitleElement('Фиды');
+
+  cardBodyFeed.appendChild(cardTitleFeed);
+  cardFeed.appendChild(cardBodyFeed);
+  feeds.appendChild(cardFeed);
+
+  const ul = createFeedListElement();
+  const li = createFeedListItemElement(feedTitle, feedDescription);
+
+  ul.appendChild(li);
+  feeds.appendChild(ul);
+};
+
 const createPosts = (state) => {
   const posts = document.querySelector('.posts');
   const cardTitlePost = createCardTitle('Посты');
@@ -53,32 +141,6 @@ const createPosts = (state) => {
       createPostItem(posts, postArray[i], postTitle, i);
     }
   }
-};
-
-const createCardTitle = (text) => {
-  const cardTitle = document.createElement('h2');
-  cardTitle.classList.add('card-title', 'h4');
-  cardTitle.textContent = text;
-  return cardTitle;
-};
-
-const createCard = () => {
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-  return card;
-};
-
-const createCardBody = () => {
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-  return cardBody;
-};
-
-const createInitialPostsSection = (posts, cardPost, cardTitlePost) => {
-  posts.insertBefore(cardPost, cardTitlePost.nextSibling);
-  const ul = document.createElement('ul');
-  ul.classList.add('list-group', 'border-0', 'rounded-0');
-  posts.insertBefore(ul, cardPost.nextSibling);
 };
 
 const createPostItem = (posts, post, postTitle, index) => {
@@ -126,6 +188,13 @@ const createButton = (index) => {
   return button;
 };
 
+const createInitialPostsSection = (posts, cardPost, cardTitlePost) => {
+  posts.insertBefore(cardPost, cardTitlePost.nextSibling);
+  const ul = document.createElement('ul');
+  ul.classList.add('list-group', 'border-0', 'rounded-0');
+  posts.insertBefore(ul, cardPost.nextSibling);
+};
+
 const createFeeds = (state) => {
   const feeds = document.querySelector('.feeds');
   const feedTitle = state.urlForm.receivedData.feeds[0].textContent;
@@ -137,94 +206,6 @@ const createFeeds = (state) => {
     createFeedSection(feeds, feedTitle, feedDescription);
     state.urlForm.receivedData.createdFeeds = true;
   }
-};
-
-const createFeedItem = (feeds, feedTitle, feedDescription) => {
-  const ul = feeds.querySelector('ul');
-  const existingFeed = ul.querySelector(`li[data-title="${feedTitle}"]`);
-  if (!existingFeed) {
-    const li = createFeedListItem(feedTitle, feedDescription);
-    ul.insertBefore(li, ul.firstChild);
-  }
-};
-
-const createFeedSection = (feeds, feedTitle, feedDescription) => {
-  const cardFeed = createCardElement();
-  const cardBodyFeed = createCardBodyElement();
-  const cardTitleFeed = createCardTitleElement('Фиды');
-
-  cardBodyFeed.appendChild(cardTitleFeed);
-  cardFeed.appendChild(cardBodyFeed);
-  feeds.appendChild(cardFeed);
-
-  const ul = createFeedListElement();
-  const li = createFeedListItemElement(feedTitle, feedDescription);
-
-  ul.appendChild(li);
-  feeds.appendChild(ul);
-};
-
-const createCardElement = () => {
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-  return card;
-};
-
-const createCardBodyElement = () => {
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-  return cardBody;
-};
-
-const createCardTitleElement = (text) => {
-  const cardTitle = document.createElement('h2');
-  cardTitle.classList.add('card-title', 'h4');
-  cardTitle.textContent = text;
-  return cardTitle;
-};
-
-const createFeedListElement = () => {
-  const ul = document.createElement('ul');
-  ul.classList.add('list-group', 'border-0', 'rounded-0');
-  return ul;
-};
-
-const createFeedListItemElement = (feedTitle, feedDescription) => {
-  const li = document.createElement('li');
-  li.classList.add('list-group-item', 'border-0', 'border-end-0');
-  li.dataset.title = feedTitle;
-
-  const h3 = document.createElement('h3');
-  h3.classList.add('h6', 'm-0');
-  h3.textContent = feedTitle;
-
-  const p = document.createElement('p');
-  p.classList.add('m-0', 'small', 'text-black-50');
-  p.textContent = feedDescription;
-
-  li.appendChild(h3);
-  li.appendChild(p);
-
-  return li;
-};
-
-const createFeedListItem = (feedTitle, feedDescription) => {
-  const li = document.createElement('li');
-  li.classList.add('list-group-item', 'border-0', 'border-end-0');
-  li.dataset.title = feedTitle;
-
-  const h3 = document.createElement('h3');
-  h3.classList.add('h6', 'm-0');
-  h3.textContent = feedTitle;
-
-  const p = document.createElement('p');
-  p.classList.add('m-0', 'small', 'text-black-50');
-  p.textContent = feedDescription;
-
-  li.appendChild(h3);
-  li.appendChild(p);
-
-  return li;
 };
 
 const updateFormStatus = (status, feedback, input, i18next, translate, state) => {
