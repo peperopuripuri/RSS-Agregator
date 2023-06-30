@@ -30,6 +30,31 @@ const triggerModal = (postArray, i) => {
   modal.style.display = 'block';
 };
 
+const createPosts = (state) => {
+  const posts = document.querySelector('.posts');
+  const cardTitlePost = createCardTitle('Посты');
+  posts.insertBefore(cardTitlePost, posts.firstChild);
+
+  const cardPost = createCard();
+  const cardBodyPost = createCardBody();
+  cardBodyPost.appendChild(cardTitlePost);
+  cardPost.appendChild(cardBodyPost);
+
+  if (!state.urlForm.receivedData.createdPosts) {
+    createInitialPostsSection(posts, cardPost, cardTitlePost);
+    state.urlForm.receivedData.createdPosts = true;
+  }
+
+  const postArray = state.urlForm.receivedData.posts;
+  for (let i = 0; i < postArray.length; i++) {
+    const postTitle = postArray[i].querySelector('title').textContent;
+    const existingPost = posts.querySelector(`a[data-title='${postTitle}']`);
+    if (!existingPost) {
+      createPostItem(posts, postArray[i], postTitle, i);
+    }
+  }
+};
+
 const createCardTitle = (text) => {
   const cardTitle = document.createElement('h2');
   cardTitle.classList.add('card-title', 'h4');
@@ -101,28 +126,16 @@ const createButton = (index) => {
   return button;
 };
 
-const createPosts = (state) => {
-  const posts = document.querySelector('.posts');
-  const cardTitlePost = createCardTitle('Посты');
-  posts.insertBefore(cardTitlePost, posts.firstChild);
+const createFeeds = (state) => {
+  const feeds = document.querySelector('.feeds');
+  const feedTitle = state.urlForm.receivedData.feeds[0].textContent;
+  const feedDescription = state.urlForm.receivedData.feeds[1].textContent;
 
-  const cardPost = createCard();
-  const cardBodyPost = createCardBody();
-  cardBodyPost.appendChild(cardTitlePost);
-  cardPost.appendChild(cardBodyPost);
-
-  if (!state.urlForm.receivedData.createdPosts) {
-    createInitialPostsSection(posts, cardPost, cardTitlePost);
-    state.urlForm.receivedData.createdPosts = true;
-  }
-
-  const postArray = state.urlForm.receivedData.posts;
-  for (let i = 0; i < postArray.length; i++) {
-    const postTitle = postArray[i].querySelector('title').textContent;
-    const existingPost = posts.querySelector(`a[data-title='${postTitle}']`);
-    if (!existingPost) {
-      createPostItem(posts, postArray[i], postTitle, i);
-    }
+  if (state.urlForm.receivedData.createdFeeds) {
+    createFeedItem(feeds, feedTitle, feedDescription);
+  } else {
+    createFeedSection(feeds, feedTitle, feedDescription);
+    state.urlForm.receivedData.createdFeeds = true;
   }
 };
 
@@ -212,19 +225,6 @@ const createFeedListItem = (feedTitle, feedDescription) => {
   li.appendChild(p);
 
   return li;
-};
-
-const createFeeds = (state) => {
-  const feeds = document.querySelector('.feeds');
-  const feedTitle = state.urlForm.receivedData.feeds[0].textContent;
-  const feedDescription = state.urlForm.receivedData.feeds[1].textContent;
-
-  if (state.urlForm.receivedData.createdFeeds) {
-    createFeedItem(feeds, feedTitle, feedDescription);
-  } else {
-    createFeedSection(feeds, feedTitle, feedDescription);
-    state.urlForm.receivedData.createdFeeds = true;
-  }
 };
 
 const updateFormStatus = (status, feedback, input, i18next, translate, state) => {
