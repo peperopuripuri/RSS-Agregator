@@ -5,6 +5,11 @@ import i18next from 'i18next';
 
 const translate = (bible, key) => bible.t(key);
 
+function closeModal() {
+    modal.classList.remove("show");
+    modal.style.display = "none";
+};
+
 const triggerModal = (postArray, i) => {
     const post = postArray[i];
     const modalTitle = document.querySelector('.modal-title');
@@ -18,15 +23,8 @@ const triggerModal = (postArray, i) => {
     modalBody.textContent = post.querySelector('description').textContent;
     modalLink.href = post.querySelector('link').textContent;
 
-    btnClose.addEventListener('click', () => {
-        modal.classList.remove("show");
-        modal.style.display = "none";
-    });
-
-    btnSecondary.addEventListener('click', () => {
-        modal.classList.remove("show");
-        modal.style.display = "none";
-    });
+    btnClose.addEventListener('click', closeModal);
+    btnSecondary.addEventListener('click', closeModal);
 
     modal.classList.add("show");
     modal.style.display = "block";
