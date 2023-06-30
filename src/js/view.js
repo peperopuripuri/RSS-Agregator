@@ -5,6 +5,33 @@ import i18next from 'i18next';
 
 const translate = (bible, key) => bible.t(key);
 
+const triggerModal = (postArray, i) => {
+    const post = postArray[i];
+    const modalTitle = document.querySelector('.modal-title');
+    const modalBody = document.querySelector('.modal-body');
+    const modalLink = document.querySelector('.full-article');
+    const btnClose = document.querySelector('.btn-close');
+    const btnSecondary = document.querySelector('.btn-secondary');
+    const modal = document.querySelector('#modal');
+
+    modalTitle.textContent = post.querySelector('title').textContent;
+    modalBody.textContent = post.querySelector('description').textContent;
+    modalLink.href = post.querySelector('link').textContent;
+
+    btnClose.addEventListener('click', () => {
+        modal.classList.remove("show");
+        modal.style.display = "none";
+    });
+
+    btnSecondary.addEventListener('click', () => {
+        modal.classList.remove("show");
+        modal.style.display = "none";
+    });
+
+    modal.classList.add("show");
+    modal.style.display = "block";
+};
+
 const createPosts = (state) => {
     const posts = document.querySelector('.posts');
     const cardTitlePost = document.createElement('h2');
@@ -56,30 +83,7 @@ const createPosts = (state) => {
             button.textContent = 'Просмотр';
 
             button.addEventListener('click', () => {
-                const modalTitle = document.querySelector('.modal-title');
-                const modalBody = document.querySelector('.modal-body');
-                const modalLink = document.querySelector('.full-article');
-                const btnClose = document.querySelector('.btn-close');
-                const btnSecondary = document.querySelector('.btn-secondary');
-                const modal = document.querySelector('#modal');
-
-                modalTitle.textContent = postTitle;
-                modalBody.textContent = postArray[i].querySelector('description').textContent;
-                modalLink.href = postArray[i].querySelector('link').textContent;
-
-                btnClose.addEventListener('click', () => {
-                    modal.classList.remove("show");
-                    modal.style.display = "none";
-                });
-
-                btnSecondary.addEventListener('click', () => {
-                    modal.classList.remove("show");
-                    modal.style.display = "none";
-                });
-
-                modal.classList.add("show");
-                modal.style.display = "block";
-
+                triggerModal(postArray, i);
                 li.classList.remove('fw-bold');
                 li.classList.add('fw-normal');
             });
@@ -147,12 +151,14 @@ const createFeeds = (state) => {
     };
 };
 
-export const render = (state) => {
-    const input = document.querySelector('#url-input');
-    const feedback = document.querySelector('.feedback');
+const updateFormStatus = (status, feedback, input, i18next, translate, state) => {
+    feedback.classList.remove('text-success');
+    input.classList.remove('is-valid');
+    input.classList.add('is-invalid');
+    feedback.classList.add('text-danger');
+    feedback.textContent = '';
 
-    if (state.urlForm.urls.length > 1) state.urlForm.urls.splice(0, 1);
-    switch (state.urlForm.status) {
+    switch (status) {
         case 'correct':
             input.form.reset();
             input.classList.remove('is-invalid');
@@ -163,44 +169,34 @@ export const render = (state) => {
             feedback.textContent = translate(i18next, 'correct');
             if (state.urlForm.receivedData.feeds.length) {
                 createFeeds(state);
-            };
+            }
             if (state.urlForm.receivedData.posts.length) {
                 createPosts(state);
-            };
+            }
             break;
         case 'error':
-            feedback.classList.remove('text-success');
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid');
-            feedback.classList.add('text-danger');
-            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'error');
             break;
         case 'dublicate':
-            feedback.classList.remove('text-success');
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid');
-            feedback.classList.add('text-danger');
-            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'dublicate');
             break;
         case 'parseErr':
-            feedback.classList.remove('text-success');
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid');
-            feedback.classList.add('text-danger');
-            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'parseErr');
             break;
         case 'networkErr':
-            feedback.classList.remove('text-success');
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid');
-            feedback.classList.add('text-danger');
-            feedback.textContent = '';
             feedback.textContent = translate(i18next, 'networkErr');
             break;
     }
+};
+
+export const render = (state) => {
+    const input = document.querySelector('#url-input');
+    const feedback = document.querySelector('.feedback');
+    const urls = state.urlForm.urls;
+    const urlsLength = state.urlForm.urls.length;
+
+    if (urlsLength > 1) urls.splice(0, 1);
+    updateFormStatus(state.urlForm.status, feedback, input, i18next, translate, state);
 };
 
 export const createWatchedState = (state, render) => {
