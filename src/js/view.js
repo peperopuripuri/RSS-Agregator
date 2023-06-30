@@ -30,25 +30,6 @@ const triggerModal = (postArray, i) => {
   modal.style.display = 'block';
 };
 
-const createCardTitle = (text) => {
-  const cardTitle = document.createElement('h2');
-  cardTitle.classList.add('card-title', 'h4');
-  cardTitle.textContent = text;
-  return cardTitle;
-};
-
-const createCard = () => {
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-  return card;
-};
-
-const createCardBody = () => {
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-  return cardBody;
-};
-
 const createCardElement = () => {
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
@@ -120,11 +101,11 @@ const createFeedSection = (feeds, feedTitle, feedDescription) => {
 
 const createPosts = (state) => {
   const posts = document.querySelector('.posts');
-  const cardTitlePost = createCardTitle('Посты');
+  const cardTitlePost = createCardTitleElement('Посты');
   posts.insertBefore(cardTitlePost, posts.firstChild);
 
-  const cardPost = createCard();
-  const cardBodyPost = createCardBody();
+  const cardPost = createCardElement();
+  const cardBodyPost = createCardBodyElement();
   cardBodyPost.appendChild(cardTitlePost);
   cardPost.appendChild(cardBodyPost);
 
