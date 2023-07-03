@@ -5,9 +5,9 @@ import i18next from 'i18next';
 
 const translate = (bible, key) => bible.t(key);
 
-function closeModal() {
+function closeModal(modalBody) {
   modal.classList.remove('show');
-  modal.style.display = 'none';
+  modalBody.remove();
 }
 
 const triggerModal = (postArray, i) => {
@@ -23,8 +23,8 @@ const triggerModal = (postArray, i) => {
   modalBody.textContent = post.querySelector('description').textContent;
   modalLink.href = post.querySelector('link').textContent;
 
-  btnClose.addEventListener('click', closeModal);
-  btnSecondary.addEventListener('click', closeModal);
+  btnClose.addEventListener('click', () => closeModal(modalBody));
+  btnSecondary.addEventListener('click', () => closeModal(modalBody));
 
   modal.classList.add('show');
   modal.style.display = 'block';
@@ -134,9 +134,10 @@ const createPostItem = (posts, post, postTitle, index, postArray) => {
   const button = createButton(index);
 
   button.addEventListener('click', () => {
-    triggerModal(postArray, index);
-    li.classList.remove('fw-bold');
-    li.classList.add('fw-normal');
+    triggerModal(postArray, index, link);
+    link.classList.remove('fw-bold');
+    link.classList.add('fw-normal');
+    link.style.color = 'green';
   });
 
   li.appendChild(link);
