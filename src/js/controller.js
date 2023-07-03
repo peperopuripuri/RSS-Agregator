@@ -27,28 +27,31 @@ const parseData = (data) => {
 const addDomain = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
 
 const getData = (url, watchedState) => {
-  const urlWithDomain = addDomain(url);
-  axios.get(urlWithDomain)
-    .then((response) => {
-      const data = response.data.contents;
-      const { parsed, posts, feeds } = parseData(data, watchedState);
-      watchedState.urlForm.status = 'correct';
-      watchedState.urlForm.urls.push(url);
-      watchedState.urlForm.receivedData.posts = posts;
-      watchedState.urlForm.receivedData.feeds = feeds;
-      return { parsed, posts, feeds };
-    })
-    .catch((error) => {
-      if (error.message === errors.parse) {
-        console.error(errors.parse, error.message);
-        watchedState.urlForm.status = 'parseErr';
-      } else {
-        console.error(errors.net, error.message);
-        watchedState.urlForm.status = 'networkErr';
-      }
-    });
+  const fetchData = () => {
+    const urlWithDomain = addDomain(url);
+    axios.get(urlWithDomain)
+      .then((response) => {
+        const data = response.data.contents;
+        const { parsed, posts, feeds } = parseData(data, watchedState);
+        watchedState.urlForm.status = 'correct';
+        watchedState.urlForm.urls.push(url);
+        watchedState.urlForm.receivedData.posts = posts;
+        watchedState.urlForm.receivedData.feeds = feeds;
+        return { parsed, posts, feeds };
+      })
+      .catch((error) => {
+        if (error.message === errors.parse) {
+          console.error(errors.parse, error.message);
+          watchedState.urlForm.status = 'parseErr';
+        } else {
+          console.error(errors.net, error.message);
+          watchedState.urlForm.status = 'networkErr';
+        }
+      });
+  };
+  fetchData();
+  setTimeout(fetchData, 5000);
 };
-
 export default () => {
   const state = {
     urlForm: {
@@ -74,8 +77,9 @@ export default () => {
     yup
       .string().url().notOneOf(urls)
       .validate(url)
-      .then(() => getData(url, watchedState))
-      .then (() => setTimeout(getData(url, watchedState), 5000))
+      .then(() => {
+        getData(url, watchedState)
+      })
       .catch((error) => {
         if (error.message === 'this must be a valid URL') {
           console.error(errors.invalid, error.message);
