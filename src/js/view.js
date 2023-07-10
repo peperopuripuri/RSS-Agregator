@@ -251,8 +251,6 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
   }
 };
 
-
-
 export const render = (state) => {
   const input = document.querySelector('#url-input');
   const feedback = document.querySelector('.feedback');
