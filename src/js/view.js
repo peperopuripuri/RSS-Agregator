@@ -128,20 +128,15 @@ const createPostItem = (posts, post, postTitle, index) => {
   );
   li.dataset.title = postTitle;
 
-  const postBody = post.querySelector('description').textContent;
-  const postLink = post.querySelector('link').textContent;
+  const { postBody, postLink } = getPostData(post);
 
   const link = createLink(post, postTitle, index);
   const button = createButton(postTitle, postBody, postLink);
-  const btnClose = document.querySelector('.btn-close');
-  const btnSecondary = document.querySelector('.btn-secondary');
   const modal = document.querySelector('#modal');
 
   modal.addEventListener('show.bs.modal', (event) => {
     const buttonn = event.relatedTarget;
-    const titlee = buttonn.getAttribute('data-title');
-    const body = buttonn.getAttribute('data-body');
-    const linkk = buttonn.getAttribute('data-link');
+    const { titlee, body, linkk } = getModalData(buttonn);
     const modall = event.target;
     const modalTitle = modall.querySelector('.modal-title');
     const modalBody = modall.querySelector('.modal-body');
@@ -151,6 +146,8 @@ const createPostItem = (posts, post, postTitle, index) => {
     modalLink.href = linkk;
   });
 
+  const btnClose = document.querySelector('.btn-close');
+  const btnSecondary = document.querySelector('.btn-secondary');
   btnClose.addEventListener('click', () => closeModal(modal));
   btnSecondary.addEventListener('click', () => closeModal(modal));
 
@@ -160,10 +157,29 @@ const createPostItem = (posts, post, postTitle, index) => {
     link.style.color = 'green';
   });
 
-  li.appendChild(link);
-  li.appendChild(button);
+  appendElements(li, [link, button]);
   ul.insertBefore(li, ul.firstChild);
 };
+
+const getPostData = (post) => {
+  const postBody = post.querySelector('description').textContent;
+  const postLink = post.querySelector('link').textContent;
+  return { postBody, postLink };
+};
+
+const getModalData = (buttonn) => {
+  const titlee = buttonn.getAttribute('data-title');
+  const body = buttonn.getAttribute('data-body');
+  const linkk = buttonn.getAttribute('data-link');
+  return { titlee, body, linkk };
+};
+
+const appendElements = (parent, elements) => {
+  elements.forEach((element) => {
+    parent.appendChild(element);
+  });
+};
+
 
 const createPosts = (state) => {
   const posts = document.querySelector('.posts');
@@ -204,6 +220,8 @@ const createFeeds = (state) => {
 };
 
 const updateFormStatus = (status, feedback, input, customI18next, customTranslate, state) => {
+  const { receivedData } = state.urlForm;
+
   feedback.classList.remove('text-success', 'text-danger');
   input.classList.remove('is-valid', 'is-invalid');
   feedback.textContent = '';
@@ -214,10 +232,10 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
       input.classList.add('is-valid');
       feedback.classList.add('text-success');
       feedback.textContent = customTranslate(customI18next, 'correct');
-      if (state.urlForm.receivedData.feeds.length) {
+      if (receivedData.feeds.length) {
         createFeeds(state);
       }
-      if (state.urlForm.receivedData.posts.length) {
+      if (receivedData.posts.length) {
         createPosts(state);
       }
       break;
@@ -230,8 +248,10 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
       input.classList.add('is-invalid');
       break;
     default:
+      break;
   }
 };
+
 
 
 export const render = (state) => {
