@@ -7,7 +7,7 @@ const translate = (bible, key) => bible.t(key);
 
 function closeModal(modal) {
   modal.classList.remove('show');
-};
+}
 
 const createCardElement = () => {
   const card = document.createElement('div');
@@ -115,6 +115,25 @@ const createLink = (post, postTitle, index) => {
   return link;
 };
 
+const getPostData = (post) => {
+  const postBody = post.querySelector('description').textContent;
+  const postLink = post.querySelector('link').textContent;
+  return { postBody, postLink };
+};
+
+const getModalData = (buttonn) => {
+  const titlee = buttonn.getAttribute('data-title');
+  const body = buttonn.getAttribute('data-body');
+  const linkk = buttonn.getAttribute('data-link');
+  return { titlee, body, linkk };
+};
+
+const appendElements = (parent, elements) => {
+  elements.forEach((element) => {
+    parent.appendChild(element);
+  });
+};
+
 const createPostItem = (posts, post, postTitle, index) => {
   const ul = posts.querySelector('ul');
   const li = document.createElement('li');
@@ -161,26 +180,6 @@ const createPostItem = (posts, post, postTitle, index) => {
   ul.insertBefore(li, ul.firstChild);
 };
 
-const getPostData = (post) => {
-  const postBody = post.querySelector('description').textContent;
-  const postLink = post.querySelector('link').textContent;
-  return { postBody, postLink };
-};
-
-const getModalData = (buttonn) => {
-  const titlee = buttonn.getAttribute('data-title');
-  const body = buttonn.getAttribute('data-body');
-  const linkk = buttonn.getAttribute('data-link');
-  return { titlee, body, linkk };
-};
-
-const appendElements = (parent, elements) => {
-  elements.forEach((element) => {
-    parent.appendChild(element);
-  });
-};
-
-
 const createPosts = (state) => {
   const posts = document.querySelector('.posts');
   const cardTitlePost = createCardTitleElement('Посты');
@@ -197,7 +196,7 @@ const createPosts = (state) => {
   }
 
   const postArray = state.urlForm.receivedData.posts;
-  for (let i = 0; i < postArray.length; i +=1) {
+  for (let i = 0; i < postArray.length; i += 1) {
     const postTitle = postArray[i].querySelector('title').textContent;
     const existingPost = posts.querySelector(`a[data-title='${postTitle}']`);
     if (!existingPost) {
