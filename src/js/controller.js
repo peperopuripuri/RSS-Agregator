@@ -6,7 +6,6 @@ import errors from './errors';
 import resources from '../resources/resources';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
-import { data } from 'jquery';
 
 const parseData = (data) => {
   const parser = new DOMParser();
