@@ -5,29 +5,9 @@ import i18next from 'i18next';
 
 const translate = (bible, key) => bible.t(key);
 
-function closeModal() {
+function closeModal(modal) {
   modal.classList.remove('show');
-}
-
-// const triggerModal = (postArray, i) => {
-//   const post = postArray[i];
-//   const modalTitle = document.querySelector('.modal-title');
-//   const modalBody = document.querySelector('.modal-body');
-//   const modalLink = document.querySelector('.full-article');
-//   const btnClose = document.querySelector('.btn-close');
-//   const btnSecondary = document.querySelector('.btn-secondary');
-//   const modal = document.querySelector('#modal');
-
-//   modalTitle.textContent = post.querySelector('title').textContent;
-//   modalBody.textContent = post.querySelector('description').textContent;
-//   modalLink.href = post.querySelector('link').textContent;
-
-//   btnClose.addEventListener('click', () => closeModal(modalBody));
-//   btnSecondary.addEventListener('click', () => closeModal(modalBody));
-
-//   modal.classList.add('show');
-//   modal.style.display = 'block';
-// };
+};
 
 const createCardElement = () => {
   const card = document.createElement('div');
@@ -98,29 +78,11 @@ const createFeedSection = (feeds, feedTitle, feedDescription) => {
   feeds.appendChild(ul);
 };
 
-const createPosts = (state) => {
-  const posts = document.querySelector('.posts');
-  const cardTitlePost = createCardTitleElement('Посты');
-  posts.insertBefore(cardTitlePost, posts.firstChild);
-
-  const cardPost = createCardElement();
-  const cardBodyPost = createCardBodyElement();
-  cardBodyPost.appendChild(cardTitlePost);
-  cardPost.appendChild(cardBodyPost);
-
-  if (!state.urlForm.receivedData.createdPosts) {
-    createInitialPostsSection(posts, cardPost, cardTitlePost);
-    state.urlForm.receivedData.createdPosts = true;
-  }
-
-  const postArray = state.urlForm.receivedData.posts;
-  for (let i = 0; i < postArray.length; i++) {
-    const postTitle = postArray[i].querySelector('title').textContent;
-    const existingPost = posts.querySelector(`a[data-title='${postTitle}']`);
-    if (!existingPost) {
-      createPostItem(posts, postArray[i], postTitle, i, postArray);
-    }
-  }
+const createInitialPostsSection = (posts, cardPost, cardTitlePost) => {
+  posts.insertBefore(cardPost, cardTitlePost.nextSibling);
+  const ul = document.createElement('ul');
+  ul.classList.add('list-group', 'border-0', 'rounded-0');
+  posts.insertBefore(ul, cardPost.nextSibling);
 };
 
 const createButton = (postTitle, postBody, postLink) => {
@@ -136,7 +98,24 @@ const createButton = (postTitle, postBody, postLink) => {
   return button;
 };
 
-const createPostItem = (posts, post, postTitle, index, postArray) => {
+const createLink = (post, postTitle, index) => {
+  const link = document.createElement('a');
+  link.href = post.querySelector('link').textContent;
+  link.classList.add('fw-bold');
+  link.setAttribute('data-id', index);
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = postTitle;
+  link.setAttribute('data-title', postTitle);
+  link.setAttribute('data-link', post.querySelector('link').textContent);
+  link.setAttribute(
+    'data-description',
+    post.querySelector('description').textContent,
+  );
+  return link;
+};
+
+const createPostItem = (posts, post, postTitle, index) => {
   const ul = posts.querySelector('ul');
   const li = document.createElement('li');
   li.classList.add(
@@ -159,21 +138,21 @@ const createPostItem = (posts, post, postTitle, index, postArray) => {
   const modal = document.querySelector('#modal');
 
   modal.addEventListener('show.bs.modal', (event) => {
-    const button = event.relatedTarget;
-    const title = button.getAttribute('data-title');
-    const body = button.getAttribute('data-body');
-    const link = button.getAttribute('data-link');
-    const modal = event.target;
-    const modalTitle = modal.querySelector('.modal-title');
-    const modalBody = modal.querySelector('.modal-body');
-    const modalLink = modal.querySelector('.full-article');
-    modalTitle.textContent = title;
+    const buttonn = event.relatedTarget;
+    const titlee = buttonn.getAttribute('data-title');
+    const body = buttonn.getAttribute('data-body');
+    const linkk = buttonn.getAttribute('data-link');
+    const modall = event.target;
+    const modalTitle = modall.querySelector('.modal-title');
+    const modalBody = modall.querySelector('.modal-body');
+    const modalLink = modall.querySelector('.full-article');
+    modalTitle.textContent = titlee;
     modalBody.textContent = body;
-    modalLink.href = link;
+    modalLink.href = linkk;
   });
 
-  btnClose.addEventListener('click', () => closeModal());
-  btnSecondary.addEventListener('click', () => closeModal());
+  btnClose.addEventListener('click', () => closeModal(modal));
+  btnSecondary.addEventListener('click', () => closeModal(modal));
 
   button.addEventListener('click', () => {
     link.classList.remove('fw-bold');
@@ -186,28 +165,29 @@ const createPostItem = (posts, post, postTitle, index, postArray) => {
   ul.insertBefore(li, ul.firstChild);
 };
 
-const createLink = (post, postTitle, index) => {
-  const link = document.createElement('a');
-  link.href = post.querySelector('link').textContent;
-  link.classList.add('fw-bold');
-  link.setAttribute('data-id', index);
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  link.textContent = postTitle;
-  link.setAttribute('data-title', postTitle);
-  link.setAttribute('data-link', post.querySelector('link').textContent);
-  link.setAttribute(
-    'data-description',
-    post.querySelector('description').textContent,
-  );
-  return link;
-};
+const createPosts = (state) => {
+  const posts = document.querySelector('.posts');
+  const cardTitlePost = createCardTitleElement('Посты');
+  posts.insertBefore(cardTitlePost, posts.firstChild);
 
-const createInitialPostsSection = (posts, cardPost, cardTitlePost) => {
-  posts.insertBefore(cardPost, cardTitlePost.nextSibling);
-  const ul = document.createElement('ul');
-  ul.classList.add('list-group', 'border-0', 'rounded-0');
-  posts.insertBefore(ul, cardPost.nextSibling);
+  const cardPost = createCardElement();
+  const cardBodyPost = createCardBodyElement();
+  cardBodyPost.appendChild(cardTitlePost);
+  cardPost.appendChild(cardBodyPost);
+
+  if (!state.urlForm.receivedData.createdPosts) {
+    createInitialPostsSection(posts, cardPost, cardTitlePost);
+    state.urlForm.receivedData.createdPosts = true;
+  }
+
+  const postArray = state.urlForm.receivedData.posts;
+  for (let i = 0; i < postArray.length; i +=1) {
+    const postTitle = postArray[i].querySelector('title').textContent;
+    const existingPost = posts.querySelector(`a[data-title='${postTitle}']`);
+    if (!existingPost) {
+      createPostItem(posts, postArray[i], postTitle, i, postArray);
+    }
+  }
 };
 
 const createFeeds = (state) => {
@@ -223,14 +203,7 @@ const createFeeds = (state) => {
   }
 };
 
-const updateFormStatus = (
-  status,
-  feedback,
-  input,
-  i18next,
-  translate,
-  state,
-) => {
+const updateFormStatus = (status, feedback, input, customI18next, customTranslate, state) => {
   feedback.classList.remove('text-success', 'text-danger');
   input.classList.remove('is-valid', 'is-invalid');
   feedback.textContent = '';
@@ -240,7 +213,7 @@ const updateFormStatus = (
       input.form.reset();
       input.classList.add('is-valid');
       feedback.classList.add('text-success');
-      feedback.textContent = translate(i18next, 'correct');
+      feedback.textContent = customTranslate(customI18next, 'correct');
       if (state.urlForm.receivedData.feeds.length) {
         createFeeds(state);
       }
@@ -252,12 +225,14 @@ const updateFormStatus = (
     case 'dublicate':
     case 'parseErr':
     case 'networkErr':
-      feedback.textContent = translate(i18next, status);
+      feedback.textContent = customTranslate(customI18next, status);
       feedback.classList.add('text-danger');
       input.classList.add('is-invalid');
       break;
+    default:
   }
 };
+
 
 export const render = (state) => {
   const input = document.querySelector('#url-input');
