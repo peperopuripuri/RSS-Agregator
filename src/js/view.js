@@ -276,9 +276,9 @@ export const render = (state) => {
   );
 };
 
-export const createWatchedState = (state, render) => {
+export const createWatchedState = (state, rndr) => {
   const watchedState = onChange(state, () => {
-    render(state);
+    rndr(state);
   });
   return watchedState;
 };
