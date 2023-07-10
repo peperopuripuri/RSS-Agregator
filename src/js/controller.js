@@ -49,8 +49,8 @@ const getData = (url, watchedState) => {
       });
   };
   fetchData();
-  setTimeout(fetchData, 5000);
 };
+
 export default () => {
   const state = {
     urlForm: {
@@ -78,6 +78,7 @@ export default () => {
       .validate(url)
       .then(() => {
         getData(url, watchedState);
+        setTimeout(getData, 5000);
       })
       .catch((error) => {
         if (error.message === 'this must be a valid URL') {
