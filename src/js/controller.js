@@ -77,7 +77,7 @@ export default () => {
       .string().url().notOneOf(urls)
       .validate(url)
       .then(() => {
-        getData(url, watchedState)
+        getData(url, watchedState);
       })
       .catch((error) => {
         if (error.message === 'this must be a valid URL') {
