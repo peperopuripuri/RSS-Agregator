@@ -13,17 +13,17 @@ const parseData = (data) => {
   const parseError = parsed.querySelector('parsererror');
 
   if (parseError) {
-    throw new Error(errors.parse);
-  } else {
-    const posts = Array.from(parsed.querySelectorAll('item'));
-    const title = parsed.querySelector('title');
-    const description = parsed.querySelector('description');
-    const feeds = [title, description];
-    return { parsed, posts, feeds };
+    throw parseError.querySelector('h3').textContent = errors.parse;
   }
+
+  const posts = Array.from(parsed.querySelectorAll('item'));
+  const title = parsed.querySelector('title');
+  const description = parsed.querySelector('description');
+  const feeds = [title, description];
+  return { parsed, posts, feeds };
 };
 
-const addDomain = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
+const addDomain = (url) => new URL(`get?disableCache=true&url=${encodeURIComponent(url)}`, 'https://allorigins.hexlet.app/');
 
 const getData = (url, watchedState) => {
   const fetchData = () => {
@@ -39,16 +39,17 @@ const getData = (url, watchedState) => {
         return { parsed, posts, feeds };
       })
       .catch((error) => {
-        if (error.message === errors.parse) {
-          console.error(errors.parse, error.message);
+        if (error === errors.parse) {
+          console.error(errors.parse);
           watchedState.urlForm.status = 'parseErr';
         } else {
-          console.error(errors.net, error.message);
+          console.error(errors.net);
           watchedState.urlForm.status = 'networkErr';
         }
       });
   };
   fetchData();
+  setTimeout(() => fetchData(), 5000);
 };
 
 export default () => {
@@ -71,14 +72,13 @@ export default () => {
   const form = document.querySelector('.rss-form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const url = new FormData(e.target)?.get('url');
+    const url = new FormData(e.target).get('url');
     const { urls } = watchedState.urlForm;
     yup
       .string().url().notOneOf(urls)
       .validate(url)
       .then(() => {
         getData(url, watchedState);
-        setTimeout(getData, 5000);
       })
       .catch((error) => {
         if (error.message === 'this must be a valid URL') {

@@ -112,6 +112,11 @@ const createLink = (post, postTitle, index) => {
     'data-description',
     post.querySelector('description').textContent,
   );
+  link.addEventListener('click', () => {
+    link.classList.remove('fw-bold');
+    link.classList.add('fw-normal');
+    link.style.color = 'green';
+  });
   return link;
 };
 
@@ -225,9 +230,17 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
   input.classList.remove('is-valid', 'is-invalid');
   feedback.textContent = '';
 
+  setTimeout(() => {
+    feedback.textContent = '';
+    input.value = '';
+    feedback.classList.remove('text-success', 'text-danger');
+    input.classList.remove('is-valid', 'is-invalid');
+    input.classList.remove('is-valid');
+    feedback.classList.remove('text-success');
+  }, 2000);
+
   switch (status) {
     case 'correct':
-      input.form.reset();
       input.classList.add('is-valid');
       feedback.classList.add('text-success');
       feedback.textContent = customTranslate(customI18next, 'correct');
