@@ -223,21 +223,27 @@ const createFeeds = (state) => {
   }
 };
 
+const resetInput = input => {
+  input.setAttribute('type', 'reset');
+  input.setAttribute('type', 'search');
+  input.classList.remove('is-valid', 'is-invalid');
+  input.classList.remove('is-valid');
+}
+
 const updateFormStatus = (status, feedback, input, customI18next, customTranslate, state) => {
   const { receivedData } = state.urlForm;
 
-  feedback.classList.remove('text-success', 'text-danger');
-  input.classList.remove('is-valid', 'is-invalid');
   feedback.textContent = '';
   input.value = '';
-  input.classList.remove('is-valid');
-  feedback.classList.remove('text-success');
 
   switch (status) {
     case 'correct':
+      feedback.classList.remove('text-success', 'text-danger');
+      input.classList.remove('is-valid', 'is-invalid');
       input.classList.add('is-valid');
       feedback.classList.add('text-success');
       feedback.textContent = customTranslate(customI18next, 'correct');
+      resetInput(input);
       if (receivedData.feeds.length) {
         createFeeds(state);
       }
@@ -252,6 +258,8 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
       feedback.textContent = customTranslate(customI18next, status);
       feedback.classList.add('text-danger');
       input.classList.add('is-invalid');
+      input.classList.remove('is-valid');
+      feedback.classList.remove('text-success');
       break;
     default:
       break;

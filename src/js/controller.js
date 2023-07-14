@@ -32,10 +32,9 @@ const getData = (url, watchedState) => {
       .then((response) => {
         const data = response.data.contents;
         const { parsed, posts, feeds } = parseData(data, watchedState);
-        watchedState.urlForm.status = 'correct';
-        watchedState.urlForm.urls.push(url);
-        watchedState.urlForm.receivedData.posts = posts;
-        watchedState.urlForm.receivedData.feeds = feeds;
+          watchedState.urlForm.urls.push(url);
+          watchedState.urlForm.receivedData.posts = posts;
+          watchedState.urlForm.receivedData.feeds = feeds;
         return { parsed, posts, feeds };
       })
       .catch((error) => {
@@ -78,6 +77,7 @@ export default () => {
       .string().url().notOneOf(urls)
       .validate(url)
       .then(() => {
+        watchedState.urlForm.status = 'correct';
         getData(url, watchedState);
       })
       .catch((error) => {
