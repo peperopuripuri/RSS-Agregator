@@ -223,12 +223,12 @@ const createFeeds = (state) => {
   }
 };
 
-const resetInput = input => {
+const resetInput = (input) => {
   input.setAttribute('type', 'reset');
   input.setAttribute('type', 'search');
   input.classList.remove('is-valid', 'is-invalid');
   input.classList.remove('is-valid');
-}
+};
 
 const updateFormStatus = (status, feedback, input, customI18next, customTranslate, state) => {
   const { receivedData } = state.urlForm;
