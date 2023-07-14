@@ -229,15 +229,9 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
   feedback.classList.remove('text-success', 'text-danger');
   input.classList.remove('is-valid', 'is-invalid');
   feedback.textContent = '';
-
-  setTimeout(() => {
-    feedback.textContent = '';
-    input.value = '';
-    feedback.classList.remove('text-success', 'text-danger');
-    input.classList.remove('is-valid', 'is-invalid');
-    input.classList.remove('is-valid');
-    feedback.classList.remove('text-success');
-  }, 5500);
+  input.value = '';
+  input.classList.remove('is-valid');
+  feedback.classList.remove('text-success');
 
   switch (status) {
     case 'correct':
