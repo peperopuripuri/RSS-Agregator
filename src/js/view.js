@@ -237,7 +237,7 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
     input.classList.remove('is-valid', 'is-invalid');
     input.classList.remove('is-valid');
     feedback.classList.remove('text-success');
-  }, 5000);
+  }, 5500);
 
   switch (status) {
     case 'correct':
