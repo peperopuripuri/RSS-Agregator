@@ -57,7 +57,6 @@ const getData = (url, watchedState) => {
         }
       })
       .finally(() => {
-        console.log('🩰');
         setTimeout(fetchData, 5000);
       });
   };
@@ -97,12 +96,12 @@ export default () => {
         getData(url, watchedState);
 
         const postsContainer = document.querySelector('.posts');
-        postsContainer.addEventListener('click', (e) => {
-          if (e.target.tagName === 'A') {
-            handleLinkClick(e.target);
+        postsContainer.addEventListener('click', (clickEvent) => {
+          if (clickEvent.target.tagName === 'A') {
+            handleLinkClick(clickEvent.target);
           }
-          if (e.target.tagName === 'BUTTON') {
-            handleLinkClick(e.target.previousElementSibling);
+          if (clickEvent.target.tagName === 'BUTTON') {
+            handleLinkClick(clickEvent.target.previousElementSibling);
           }
         });
 
@@ -121,8 +120,8 @@ export default () => {
           const btnClose = document.querySelector('.btn-close');
           const btnSecondary = document.querySelector('.btn-secondary');
 
-          btnClose.addEventListener('click', () => closeModal(modal));
-          btnSecondary.addEventListener('click', () => closeModal(modal));
+          btnClose.addEventListener('click', () => closeModal(modalWindow));
+          btnSecondary.addEventListener('click', () => closeModal(modalWindow));
         });
       })
       .catch((error) => {
