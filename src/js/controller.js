@@ -1,7 +1,9 @@
 import * as yup from 'yup';
 import axios from 'axios';
 import i18next from 'i18next';
-import { createWatchedState, render } from './view';
+import {
+  closeModal, createWatchedState, getModalData, handleLinkClick, render,
+} from './view';
 import errors from './errors';
 import resources from '../resources/resources';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,7 +15,11 @@ const parseData = (data) => {
   const parseError = parsed.querySelector('parsererror');
 
   if (parseError) {
-    throw (parseError.querySelector('h3').textContent = errors.parse);
+    const customError = new Error(errors.parse);
+    customError.parseKey = errors.parse;
+    const h3Element = parseError.querySelector('h3');
+    h3Element.textContent = customError.parseKey;
+    throw customError;
   }
 
   const posts = Array.from(parsed.querySelectorAll('item'));
@@ -42,17 +48,20 @@ const getData = (url, watchedState) => {
         return { parsed, posts, feeds };
       })
       .catch((error) => {
-        if (error === errors.parse) {
+        if (error.message === errors.parse) {
           console.error(errors.parse);
           watchedState.urlForm.status = 'parseErr';
         } else {
           console.error(errors.net);
           watchedState.urlForm.status = 'networkErr';
         }
+      })
+      .finally(() => {
+        console.log('🩰');
+        setTimeout(fetchData, 5000);
       });
   };
   fetchData();
-  setTimeout(() => fetchData(), 5000);
 };
 
 export default () => {
@@ -73,6 +82,7 @@ export default () => {
 
   const watchedState = createWatchedState(state, render);
   const form = document.querySelector('.rss-form');
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const url = new FormData(e.target).get('url');
@@ -85,6 +95,35 @@ export default () => {
       .then(() => {
         watchedState.urlForm.status = 'correct';
         getData(url, watchedState);
+
+        const postsContainer = document.querySelector('.posts');
+        postsContainer.addEventListener('click', (e) => {
+          if (e.target.tagName === 'A') {
+            handleLinkClick(e.target);
+          }
+          if (e.target.tagName === 'BUTTON') {
+            handleLinkClick(e.target.previousElementSibling);
+          }
+        });
+
+        const modalWindow = document.querySelector('#modal');
+        modalWindow.addEventListener('show.bs.modal', (event) => {
+          const buttonn = event.relatedTarget;
+          const { titlee, body, linkk } = getModalData(buttonn);
+          const modall = event.target;
+          const modalTitle = modall.querySelector('.modal-title');
+          const modalBody = modall.querySelector('.modal-body');
+          const modalLink = modall.querySelector('.full-article');
+          modalTitle.textContent = titlee;
+          modalBody.textContent = body;
+          modalLink.href = linkk;
+
+          const btnClose = document.querySelector('.btn-close');
+          const btnSecondary = document.querySelector('.btn-secondary');
+
+          btnClose.addEventListener('click', () => closeModal(modal));
+          btnSecondary.addEventListener('click', () => closeModal(modal));
+        });
       })
       .catch((error) => {
         if (error.message === 'this must be a valid URL') {

@@ -5,7 +5,7 @@ import i18next from 'i18next';
 
 const translate = (bible, key) => bible.t(key);
 
-function closeModal(modal) {
+export function closeModal(modal) {
   modal.classList.remove('show');
 }
 
@@ -112,11 +112,6 @@ const createLink = (post, postTitle, index) => {
     'data-description',
     post.querySelector('description').textContent,
   );
-  link.addEventListener('click', () => {
-    link.classList.remove('fw-bold');
-    link.classList.add('fw-normal');
-    link.style.color = 'green';
-  });
   return link;
 };
 
@@ -126,7 +121,7 @@ const getPostData = (post) => {
   return { postBody, postLink };
 };
 
-const getModalData = (buttonn) => {
+export const getModalData = (buttonn) => {
   const titlee = buttonn.getAttribute('data-title');
   const body = buttonn.getAttribute('data-body');
   const linkk = buttonn.getAttribute('data-link');
@@ -156,33 +151,14 @@ const createPostItem = (posts, post, postTitle, index) => {
 
   const link = createLink(post, postTitle, index);
   const button = createButton(postTitle, postBody, postLink);
-  const modal = document.querySelector('#modal');
-
-  modal.addEventListener('show.bs.modal', (event) => {
-    const buttonn = event.relatedTarget;
-    const { titlee, body, linkk } = getModalData(buttonn);
-    const modall = event.target;
-    const modalTitle = modall.querySelector('.modal-title');
-    const modalBody = modall.querySelector('.modal-body');
-    const modalLink = modall.querySelector('.full-article');
-    modalTitle.textContent = titlee;
-    modalBody.textContent = body;
-    modalLink.href = linkk;
-  });
-
-  const btnClose = document.querySelector('.btn-close');
-  const btnSecondary = document.querySelector('.btn-secondary');
-  btnClose.addEventListener('click', () => closeModal(modal));
-  btnSecondary.addEventListener('click', () => closeModal(modal));
-
-  button.addEventListener('click', () => {
-    link.classList.remove('fw-bold');
-    link.classList.add('fw-normal');
-    link.style.color = 'green';
-  });
-
   appendElements(li, [link, button]);
   ul.insertBefore(li, ul.firstChild);
+};
+
+export const handleLinkClick = (link) => {
+  link.classList.remove('fw-bold');
+  link.classList.add('fw-normal');
+  link.style.color = 'green';
 };
 
 const createPosts = (state) => {
