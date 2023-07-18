@@ -15,10 +15,7 @@ const parseData = (data) => {
   const parseError = parsed.querySelector('parsererror');
 
   if (parseError) {
-    const h3Element = document.createElement('h3');
-    h3Element.textContent = errors.parse;
-    parseError.appendChild(h3Element);
-    throw parseError;
+    throw new Error(errors.parse);
   }
 
   const posts = Array.from(parsed.querySelectorAll('item'));
@@ -47,9 +44,7 @@ const getData = (url, watchedState) => {
         return { parsed, posts, feeds };
       })
       .catch((error) => {
-        const h3Elements = error.querySelectorAll('h3');
-        const errorMessage = h3Elements[2].textContent;
-        if (errorMessage === errors.parse) {
+        if (error.message === errors.parse) {
           console.error(errors.parse);
           watchedState.urlForm.status = 'parseErr';
         } else {
