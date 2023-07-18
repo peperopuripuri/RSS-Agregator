@@ -5,8 +5,10 @@ import i18next from 'i18next';
 
 const translate = (bible, key) => bible.t(key);
 
-export function closeModal(modal) {
-  modal.classList.remove('show');
+export function closeModal(state, modal) {
+  if (state.urlForm.modal.status === 'opened') {
+    modal.classList.remove('show');
+  }
 }
 
 const createCardElement = () => {
@@ -155,10 +157,12 @@ const createPostItem = (posts, post, postTitle, index) => {
   ul.insertBefore(li, ul.firstChild);
 };
 
-export const handleLinkClick = (link) => {
-  link.classList.remove('fw-bold');
-  link.classList.add('fw-normal');
-  link.style.color = 'green';
+export const handleLinkClick = (state, link) => {
+  if (state.urlForm.link.status === 'visited') {
+    link.classList.remove('fw-bold');
+    link.classList.add('fw-normal');
+    link.style.color = 'green';
+  }
 };
 
 const createPosts = (state) => {
@@ -209,9 +213,6 @@ const resetInput = (input) => {
 const updateFormStatus = (status, feedback, input, customI18next, customTranslate, state) => {
   const { receivedData } = state.urlForm;
 
-  feedback.textContent = '';
-  input.value = '';
-
   switch (status) {
     case 'correct':
       feedback.classList.remove('text-success', 'text-danger');
@@ -226,6 +227,7 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
       if (receivedData.posts.length) {
         createPosts(state);
       }
+      input.value = '';
       break;
     case 'error':
     case 'dublicate':

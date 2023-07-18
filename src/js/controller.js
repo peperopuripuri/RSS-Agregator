@@ -15,11 +15,10 @@ const parseData = (data) => {
   const parseError = parsed.querySelector('parsererror');
 
   if (parseError) {
-    const customError = new Error(errors.parse);
-    customError.parseKey = errors.parse;
-    const h3Element = parseError.querySelector('h3');
-    h3Element.textContent = customError.parseKey;
-    throw customError;
+    const h3Element = document.createElement('h3');
+    h3Element.textContent = errors.parse;
+    parseError.appendChild(h3Element);
+    throw parseError;
   }
 
   const posts = Array.from(parsed.querySelectorAll('item'));
@@ -43,12 +42,14 @@ const getData = (url, watchedState) => {
         const data = response.data.contents;
         const { parsed, posts, feeds } = parseData(data, watchedState);
         watchedState.urlForm.urls.push(url);
-        watchedState.urlForm.receivedData.posts = posts;
-        watchedState.urlForm.receivedData.feeds = feeds;
+        watchedState.urlForm.receivedData.posts.push(...posts);
+        watchedState.urlForm.receivedData.feeds.push(...feeds);
         return { parsed, posts, feeds };
       })
       .catch((error) => {
-        if (error.message === errors.parse) {
+        const h3Elements = error.querySelectorAll('h3');
+        const errorMessage = h3Elements[2].textContent;
+        if (errorMessage === errors.parse) {
           console.error(errors.parse);
           watchedState.urlForm.status = 'parseErr';
         } else {
@@ -75,6 +76,12 @@ export default () => {
         createdFeeds: false,
         createdPosts: false,
       },
+      modal: {
+        status: 'closed',
+      },
+      link: {
+        status: 'notVisited',
+      },
     },
   };
   i18next.init({ lng: 'ru', resources });
@@ -98,10 +105,12 @@ export default () => {
         const postsContainer = document.querySelector('.posts');
         postsContainer.addEventListener('click', (clickEvent) => {
           if (clickEvent.target.tagName === 'A') {
-            handleLinkClick(clickEvent.target);
+            watchedState.urlForm.link.status = 'visited';
+            handleLinkClick(watchedState, clickEvent.target);
           }
           if (clickEvent.target.tagName === 'BUTTON') {
-            handleLinkClick(clickEvent.target.previousElementSibling);
+            watchedState.urlForm.link.status = 'visited';
+            handleLinkClick(watchedState, clickEvent.target.previousElementSibling);
           }
         });
 
@@ -119,9 +128,16 @@ export default () => {
 
           const btnClose = document.querySelector('.btn-close');
           const btnSecondary = document.querySelector('.btn-secondary');
+          watchedState.urlForm.modal.status = 'opened';
 
-          btnClose.addEventListener('click', () => closeModal(modalWindow));
-          btnSecondary.addEventListener('click', () => closeModal(modalWindow));
+          btnClose.addEventListener('click', () => {
+            closeModal(watchedState, modalWindow);
+            watchedState.urlForm.modal.status = 'closed';
+          });
+          btnSecondary.addEventListener('click', () => {
+            closeModal(watchedState, modalWindow);
+            watchedState.urlForm.modal.status = 'closed';
+          });
         });
       })
       .catch((error) => {
@@ -132,6 +148,11 @@ export default () => {
           console.error(errors.dubble, error.message);
           watchedState.urlForm.status = 'dublicate';
         }
+      })
+      .finally(() => {
+        setTimeout(() => {
+          watchedState.urlForm.status = null;
+        }, 5000);
       });
   });
 };
