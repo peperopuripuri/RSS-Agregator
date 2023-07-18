@@ -98,8 +98,10 @@ export default () => {
       .url()
       .notOneOf(urls)
       .validate(url)
-      .then(() => {
-        watchedState.urlForm.status = 'correct';
+      .then((success) => {
+        if (success) {
+          watchedState.urlForm.status = 'correct';
+        };
         getData(url, watchedState);
 
         const postsContainer = document.querySelector('.posts');
