@@ -96,7 +96,7 @@ export default () => {
       .then((success) => {
         if (success) {
           watchedState.urlForm.status = 'correct';
-        };
+        }
         getData(url, watchedState);
 
         const postsContainer = document.querySelector('.posts');
