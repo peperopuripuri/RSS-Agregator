@@ -62,9 +62,9 @@ const getData = (url, watchedState) => {
 
 const updateAllFeeds = (watchedState) => {
   const { urls } = watchedState.urlForm;
-  for (const url of urls) {
+  urls.forEach((url) => {
     getData(url, watchedState);
-  }
+  });
 };
 
 export default () => {
