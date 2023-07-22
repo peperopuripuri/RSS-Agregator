@@ -25,7 +25,7 @@ const renderPosts = (state, div, i18nInstance) => {
     button.textContent = i18nInstance.t('button');
 
     li.append(a, button);
-    ul.append(li);
+    ul.insertBefore(li, ul.firstChild);
   });
 
   div.append(ul);
@@ -50,7 +50,7 @@ const renderFeeds = (state, div) => {
     p.textContent = description;
 
     li.append(h3, p);
-    ul.append(li);
+    ul.insertBefore(li, ul.firstChild);
   });
 
   div.append(ul);
