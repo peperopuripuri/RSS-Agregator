@@ -60,7 +60,7 @@ const createFeedItem = (feeds, feedTitle, feedDescription) => {
   const existingFeed = ul.querySelector(`li[data-title="${feedTitle}"]`);
   if (!existingFeed) {
     const li = createFeedListItemElement(feedTitle, feedDescription);
-    ul.insertBefore(li, ul.firstChild);
+    ul.insertBefore(li, ul.firstElementChild);
   }
 };
 
@@ -71,14 +71,15 @@ const createFeedSection = (feeds, feedTitle, feedDescription) => {
 
   cardBodyFeed.appendChild(cardTitleFeed);
   cardFeed.appendChild(cardBodyFeed);
-  feeds.appendChild(cardFeed);
 
   const ul = createFeedListElement();
   const li = createFeedListItemElement(feedTitle, feedDescription);
 
   ul.appendChild(li);
-  feeds.appendChild(ul);
+  cardFeed.appendChild(ul);
+  feeds.insertBefore(cardFeed, feeds.firstElementChild);
 };
+
 
 const createInitialPostsSection = (posts, cardPost, cardTitlePost) => {
   posts.insertBefore(cardPost, cardTitlePost.nextSibling);
@@ -213,38 +214,50 @@ const updateFormStatus = (
 ) => {
   const { receivedData } = state.urlForm;
 
+  const resetFormClasses = () => {
+    feedback.classList.remove('text-success', 'text-danger');
+    input.classList.remove('is-valid', 'is-invalid');
+  };
+
+  const setFormSuccessStatus = () => {
+    input.classList.add('is-valid');
+    feedback.classList.add('text-success');
+    feedback.textContent = customTranslate(customI18next, 'correct');
+    resetInput(input);
+    if (receivedData.feeds.length) {
+      createFeeds(state);
+    }
+    if (receivedData.posts.length) {
+      createPosts(state);
+      const links = document.querySelectorAll('[data-id]');
+      links.forEach((item) => {
+        if (linky.title.includes(item.textContent)) {
+          item.classList.remove('fw-bold');
+          item.classList.add('fw-normal', 'link-secondary');
+        }
+      });
+    }
+    input.value = '';
+  };
+
+  const setFormErrorStatus = () => {
+    feedback.textContent = customTranslate(customI18next, status);
+    feedback.classList.add('text-danger');
+    input.classList.add('is-invalid');
+    input.classList.remove('is-valid');
+    feedback.classList.remove('text-success');
+  };
+
   switch (status) {
     case 'correct':
-      feedback.classList.remove('text-success', 'text-danger');
-      input.classList.remove('is-valid', 'is-invalid');
-      input.classList.add('is-valid');
-      feedback.classList.add('text-success');
-      feedback.textContent = customTranslate(customI18next, 'correct');
-      resetInput(input);
-      if (receivedData.feeds.length) {
-        createFeeds(state);
-      }
-      if (receivedData.posts.length) {
-        createPosts(state);
-        const links = document.querySelectorAll('[data-id]');
-        links.forEach((item) => {
-          if (linky.title.includes(item.textContent)) {
-            item.classList.remove('fw-bold');
-            item.classList.add('fw-normal', 'link-secondary');
-          }
-        });
-      }
-      input.value = '';
+      resetFormClasses();
+      setFormSuccessStatus();
       break;
     case 'error':
     case 'dublicate':
     case 'parseErr':
     case 'networkErr':
-      feedback.textContent = customTranslate(customI18next, status);
-      feedback.classList.add('text-danger');
-      input.classList.add('is-invalid');
-      input.classList.remove('is-valid');
-      feedback.classList.remove('text-success');
+      setFormErrorStatus();
       break;
     default:
       break;
