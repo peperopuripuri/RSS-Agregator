@@ -157,14 +157,6 @@ const createPostItem = (posts, post, postTitle, index) => {
   ul.insertBefore(li, ul.firstChild);
 };
 
-export const handleLinkClick = (state, link) => {
-  if (state.urlForm.link.status === 'visited') {
-    link.classList.remove('fw-bold');
-    link.classList.add('fw-normal');
-    link.style.color = 'green';
-  }
-};
-
 const createPosts = (state) => {
   const posts = document.querySelector('.posts');
   const cardTitlePost = createCardTitleElement('Посты');
@@ -210,7 +202,7 @@ const resetInput = (input) => {
   input.classList.remove('is-valid');
 };
 
-const updateFormStatus = (status, feedback, input, customI18next, customTranslate, state) => {
+const updateFormStatus = (status, feedback, input, customI18next, customTranslate, state, linky) => {
   const { receivedData } = state.urlForm;
 
   switch (status) {
@@ -226,6 +218,13 @@ const updateFormStatus = (status, feedback, input, customI18next, customTranslat
       }
       if (receivedData.posts.length) {
         createPosts(state);
+        const links = document.querySelectorAll('[data-id]');
+        links.forEach(item => {
+          if (linky.title.includes(item.textContent)) {
+            item.classList.remove('fw-bold');
+            item.classList.add('fw-normal', 'link-secondary');
+          }
+        });
       }
       input.value = '';
       break;
@@ -258,6 +257,7 @@ export const render = (state) => {
     i18next,
     translate,
     state,
+    state.urlForm.linky,
   );
 };
 

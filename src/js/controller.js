@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import axios from 'axios';
 import i18next from 'i18next';
 import {
-  closeModal, createWatchedState, getModalData, handleLinkClick, render,
+  closeModal, createWatchedState, getModalData, render,
 } from './view';
 import errors from './errors';
 import resources from '../resources/resources';
@@ -37,7 +37,7 @@ const getData = (url, watchedState) => {
       .get(urlWithDomain)
       .then((response) => {
         const data = response.data.contents;
-        const { parsed, posts, feeds } = parseData(data, watchedState);
+        const { parsed, posts, feeds } = parseData(data);
         watchedState.urlForm.urls.push(url);
         watchedState.urlForm.receivedData.posts.push(...posts);
         watchedState.urlForm.receivedData.feeds.push(...feeds);
@@ -48,6 +48,7 @@ const getData = (url, watchedState) => {
           console.error(errors.parse);
           watchedState.urlForm.status = 'parseErr';
         } else {
+          console.log(error);
           console.error(errors.net);
           watchedState.urlForm.status = 'networkErr';
         }
@@ -74,8 +75,9 @@ export default () => {
       modal: {
         status: 'closed',
       },
-      link: {
+      linky: {
         status: 'notVisited',
+        title: [],
       },
     },
   };
@@ -101,13 +103,9 @@ export default () => {
 
         const postsContainer = document.querySelector('.posts');
         postsContainer.addEventListener('click', (clickEvent) => {
-          if (clickEvent.target.tagName === 'A') {
-            watchedState.urlForm.link.status = 'visited';
-            handleLinkClick(watchedState, clickEvent.target);
-          }
-          if (clickEvent.target.tagName === 'BUTTON') {
-            watchedState.urlForm.link.status = 'visited';
-            handleLinkClick(watchedState, clickEvent.target.previousElementSibling);
+          if (clickEvent.target.tagName === 'A' || clickEvent.target.tagName === 'BUTTON') {
+            watchedState.urlForm.linky.status = 'visited';
+            watchedState.urlForm.linky.title.push(clickEvent.target.dataset.title);
           }
         });
 
