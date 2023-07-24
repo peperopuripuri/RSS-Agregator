@@ -90,12 +90,12 @@ export default () => {
 
       const initialState = {
         form: {
-          state: 'filling', // validating, valid, error
+          isValid: null,
           error: null,
         },
 
         loadingProcess: {
-          state: 'waiting', // finished, error,
+          state: 'waiting',
           error: null,
         },
 
@@ -120,7 +120,7 @@ export default () => {
 
         const urlsList = watchedState.feeds.map(({ link }) => link);
 
-        watchedState.form.state = 'validating';
+        watchedState.loadingProcess.state = 'loading';
 
         validateLink(inputValue, urlsList)
           .then(() => {
@@ -134,7 +134,7 @@ export default () => {
 
                 createPosts(watchedState, posts, feedId);
 
-                watchedState.form.state = 'valid';
+                watchedState.form.isValid = true;
                 watchedState.loadingProcess.state = 'finished';
               })
               .catch((requestError) => {
@@ -150,7 +150,7 @@ export default () => {
           })
           .catch((validationError) => {
             watchedState.form.error = validationError.message ?? 'defaultError';
-            watchedState.form.state = 'error';
+            watchedState.form.isValid = false;
           });
       });
 

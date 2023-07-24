@@ -120,6 +120,10 @@ const handlerFinishWithError = (elements, error, i18nInstance) => {
 
 const handlerLoadingProcessState = (elements, state, value, i18nInstance) => {
   switch (value) {
+    case 'loading':
+      elements.button.disabled = true;
+      elements.input.getAttribute('readonly');
+      break;
     case 'finished':
       handlerSuccessFinish(elements, i18nInstance);
       break;
@@ -133,14 +137,10 @@ const handlerLoadingProcessState = (elements, state, value, i18nInstance) => {
 };
 const handlerProcessStateForm = (elements, state, value, i18nInstance) => {
   switch (value) {
-    case 'validating':
-      elements.button.disabled = true;
-      elements.input.getAttribute('readonly');
-      break;
-    case 'valid':
+    case true:
       handlerSuccessFinish(elements, i18nInstance);
       break;
-    case 'error':
+    case false:
       handlerFinishWithError(elements, state.form.error, i18nInstance);
       break;
 
@@ -151,7 +151,7 @@ const handlerProcessStateForm = (elements, state, value, i18nInstance) => {
 
 export default (elements, state, i18nInstance) => (path, value) => {
   switch (path) {
-    case 'form.state':
+    case 'form.isValid':
       handlerProcessStateForm(elements, state, value, i18nInstance);
       break;
 
